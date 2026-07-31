@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f7fa;
+  --foreground: #133453;
+  --navy: #133453;
+  --navy-deep: #0f2a43;
+  --teal: #2cb1bc;
+  --teal-dark: #13919b;
+  --gold: #d6ad87;
+  --gold-bright: #f6c94a;
+  --sage: #cfe2dd;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-teal: var(--teal);
+  --color-teal-dark: var(--teal-dark);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-sage: var(--sage);
+  --font-sans: var(--font-nunito);
+  --font-roboto: var(--font-roboto);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bg-wave-navy {
+  background-color: var(--navy);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='30' viewBox='0 0 60 30'%3E%3Cpath d='M0 15 Q15 0 30 15 T60 15' fill='none' stroke='%23ffffff' stroke-opacity='0.06' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 60px 30px;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}
+
+.popup-arc-banner {
+  border-bottom-left-radius: 50% 40px;
+  border-bottom-right-radius: 50% 40px;
+}
