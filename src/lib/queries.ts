@@ -30,13 +30,13 @@ export const postBySlugQuery = groq`
 
 export const servicesQuery = groq`
   *[_type == "service"] | order(order asc) {
-    _id, title, "slug": slug.current, audience, summary
+    _id, title, "slug": slug.current, audience, summary, cardSummary
   }
 `
 
 export const serviceBySlugQuery = groq`
   *[_type == "service" && slug.current == $slug][0] {
-    _id, title, "slug": slug.current, audience, summary, image, highlights, body, seo
+    _id, title, "slug": slug.current, audience, summary, cardSummary, headerImage, image, highlights, body, tabSections, closingText, seo
   }
 `
 
@@ -64,7 +64,31 @@ export const clientLogosQuery = groq`
 
 export const galleryQuery = groq`
   *[_type == "galleryItem"] | order(order asc) {
-    _id, image, eventDate
+    _id, image, "alt": image.alt, "caption": image.caption, eventDate
+  }
+`
+
+export const interviewsQuery = groq`
+  *[_type == "interview"] | order(publishedAt desc) {
+    _id, title, "slug": slug.current, outlet, publishedAt, coverImage
+  }
+`
+
+export const interviewBySlugQuery = groq`
+  *[_type == "interview" && slug.current == $slug][0] {
+    _id, title, "slug": slug.current, outlet, publishedAt, coverImage, audioTracks, videoUrl, body, seo
+  }
+`
+
+export const usefulLinksQuery = groq`
+  *[_type == "usefulLink"] | order(order asc) {
+    _id, label, url, description
+  }
+`
+
+export const careerTipsQuery = groq`
+  *[_type == "careerTip"] | order(order asc) {
+    _id, title, instagramUrl
   }
 `
 

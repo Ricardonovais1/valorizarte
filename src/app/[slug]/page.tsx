@@ -19,7 +19,9 @@ import { getAllPageSlugs, getPageBySlug, getPostBySlug, getPosts } from '@/lib/d
  */
 export async function generateStaticParams() {
   const [posts, pageSlugs] = await Promise.all([getPosts(), getAllPageSlugs()])
-  return [...posts.map((post) => ({ slug: post.slug })), ...pageSlugs.map((slug) => ({ slug }))]
+  // "quemsomos" tem rota estática dedicada (src/app/quemsomos/page.tsx).
+  const institutionalSlugs = pageSlugs.filter((slug) => slug !== 'quemsomos')
+  return [...posts.map((post) => ({ slug: post.slug })), ...institutionalSlugs.map((slug) => ({ slug }))]
 }
 
 export async function generateMetadata({
@@ -63,7 +65,7 @@ export default async function CatchAllPage({ params }: { params: Promise<{ slug:
           <div className="relative aspect-[21/9] w-full overflow-hidden bg-navy">
             <Image
               src={imageUrl}
-              alt={(post.coverImage as { alt?: string })?.alt || post.title}
+              alt={post.coverAlt || (post.coverImage as { alt?: string })?.alt || post.title}
               fill
               priority
               className="object-cover"
@@ -71,12 +73,20 @@ export default async function CatchAllPage({ params }: { params: Promise<{ slug:
           </div>
         )}
         {!imageUrl && <PageHeader title={post.title} />}
-        <Container className="max-w-3xl py-12">
+        <Container
+          className={
+            imageUrl
+              ? 'relative z-10 max-w-3xl -mt-[12.8571vw] rounded-t-[3px] bg-white pb-12 pt-10 shadow-[0_-10px_30px_rgba(15,42,67,0.08)] sm:pt-14'
+              : 'max-w-3xl py-12'
+          }
+        >
           {post.categoryTitle && (
             <span className="text-xs font-semibold uppercase tracking-wide text-teal">{post.categoryTitle}</span>
           )}
           {imageUrl && <h1 className="mt-2 text-3xl font-bold text-navy sm:text-4xl">{post.title}</h1>}
-          <p className="mt-3 text-sm text-slate-500">{date}</p>
+          <p className="mt-3 text-sm text-slate-500">
+            {date} <span aria-hidden="true">·</span> Por Gilvan Silva
+          </p>
 
           <div className="mt-8">
             <PortableTextRenderer value={post.body} />

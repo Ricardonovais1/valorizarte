@@ -46,6 +46,24 @@ export const homePage = defineType({
       rows: 4,
     }),
     defineField({
+      name: 'howWeHelpTitle',
+      title: 'Título da seção "Como te auxiliamos?"',
+      type: 'string',
+    }),
+    defineField({
+      name: 'howWeHelpTagline',
+      title: 'Frase de destaque da seção "Como te auxiliamos?"',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
+      name: 'howWeHelpText',
+      title: 'Texto da seção "Como te auxiliamos?"',
+      type: 'text',
+      rows: 4,
+      description: 'Use **texto** para negrito.',
+    }),
+    defineField({
       name: 'showTestimonials',
       title: 'Mostrar seção de depoimentos',
       type: 'boolean',

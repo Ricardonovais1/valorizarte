@@ -1,15 +1,15 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { SectionHeading } from '@/components/SectionHeading'
 import { ServiceCard } from '@/components/ServiceCard'
+import { BoldText } from '@/components/BoldText'
 import { PostCard } from '@/components/PostCard'
-import { TestimonialCarousel } from '@/components/TestimonialCarousel'
 import { ClientLogos } from '@/components/ClientLogos'
+import { FounderSection } from '@/components/FounderSection'
+import { TestimonialsSection } from '@/components/TestimonialsSection'
 import { Hero, type HeroSlide } from '@/components/Hero'
 import { IntroCards } from '@/components/IntroCards'
 import { NewsletterForm } from '@/components/NewsletterForm'
-import { resolveImage } from '@/lib/resolveImage'
 import {
   getClientLogos,
   getGallery,
@@ -44,44 +44,31 @@ export default async function HomePage() {
         ? [{ headline: home.heroHeadline, subtext: home.heroSubtext, ctaLabel: undefined, ctaHref: undefined }]
         : []
 
-  const founderPhoto = resolveImage(home?.founderPhoto, { width: 1030, height: 636 })
-
   return (
     <>
       <Hero slides={heroSlides} />
 
       <IntroCards />
 
-      {home?.founderIntro && (
-        <section className="bg-navy pb-20" id="gilvan">
-          <Container className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-bold text-white">Gilvan Silva</h2>
-              <p className="mt-2 text-lg text-teal">Fundador da Valorizarte</p>
-              <p className="mt-5 leading-relaxed text-white/80">{home.founderIntro}</p>
-              <Link
-                href="/quemsomos"
-                className="mt-6 inline-block rounded-[5px] bg-gold px-[50px] py-3 text-sm font-medium text-white transition hover:brightness-95"
-              >
-                Saiba Mais
-              </Link>
-            </div>
-            {founderPhoto && (
-              <div className="overflow-hidden rounded-[3px]">
-                <Image
-                  src={founderPhoto}
-                  alt="Gilvan Silva"
-                  width={1030}
-                  height={636}
-                  className="h-full w-full object-cover"
-                />
-              </div>
+      <FounderSection founderIntro={home?.founderIntro} founderPhoto={home?.founderPhoto} id="gilvan" />
+
+      {home?.howWeHelpTitle && (
+        <section className="py-16">
+          <Container className="max-w-3xl text-center">
+            <h2 className="text-2xl font-bold text-navy sm:text-3xl">{home.howWeHelpTitle}</h2>
+            {home.howWeHelpTagline && (
+              <p className="mt-3 text-lg font-medium text-teal-dark">{home.howWeHelpTagline}</p>
+            )}
+            {home.howWeHelpText && (
+              <p className="mt-5 leading-relaxed text-slate-600">
+                <BoldText text={home.howWeHelpText} />
+              </p>
             )}
           </Container>
         </section>
       )}
 
-      {home?.showClientLogos !== false && <ClientLogos logos={clientLogos} />}
+      {home?.showClientLogos !== false && <ClientLogos logos={clientLogos} id="principais-clientes" />}
 
       {empresasServices.length > 0 && (
         <section className="py-16">
@@ -110,20 +97,7 @@ export default async function HomePage() {
       )}
 
       {home?.showTestimonials !== false && (
-        <section className="py-20" id="depoimentos">
-          <Container>
-            <SectionHeading title="Relatos de clientes" />
-            {testimonials.length > 0 ? (
-              <div className="mt-12">
-                <TestimonialCarousel testimonials={testimonials} />
-              </div>
-            ) : (
-              <p className="mt-10 text-center text-sm text-slate-500">
-                Os depoimentos de clientes vão aparecer aqui assim que forem cadastrados no Studio.
-              </p>
-            )}
-          </Container>
-        </section>
+        <TestimonialsSection testimonials={testimonials} id="relatos-de-clientes" />
       )}
 
       {latestPosts.length > 0 && (

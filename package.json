@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "migrate": "tsx scripts/migrate-wp.ts"
+    "migrate": "tsx scripts/migrate-wp.ts",
+    "import:blog": "tsx scripts/import-blog.ts",
+    "studio:dev": "sanity dev",
+    "studio:deploy": "sanity deploy",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types"
   },
   "dependencies": {
     "@portabletext/block-tools": "^5.1.12",
@@ -30,6 +37,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^28.0.3",
     "@types/node": "^20",
@@ -41,6 +49,14 @@
     "jsdom": "^30.0.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.119.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.4": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true,
+    "workerd@1.20260801.1": true
   }
 }

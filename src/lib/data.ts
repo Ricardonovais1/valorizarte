@@ -2,9 +2,12 @@ import { client } from '@/sanity/lib/client'
 import { isSanityConfigured } from '@/sanity/env'
 import {
   allPageSlugsQuery,
+  careerTipsQuery,
   clientLogosQuery,
   galleryQuery,
   homePageQuery,
+  interviewBySlugQuery,
+  interviewsQuery,
   navigationQuery,
   pageBySlugQuery,
   postBySlugQuery,
@@ -13,22 +16,30 @@ import {
   servicesQuery,
   siteSettingsQuery,
   testimonialsQuery,
+  usefulLinksQuery,
 } from '@/lib/queries'
 import {
+  seedCareerTips,
   seedClientLogos,
+  seedGallery,
   seedHomePage,
+  seedInterviews,
   seedNavigation,
   seedPages,
-  seedPosts,
   seedServices,
   seedSiteSettings,
   seedTestimonials,
+  seedUsefulLinks,
+  type SeedCareerTip,
   type SeedClientLogo,
+  type SeedGalleryItem,
+  type SeedInterview,
   type SeedPage,
-  type SeedPost,
   type SeedService,
   type SeedTestimonial,
+  type SeedUsefulLink,
 } from '@/content/seed'
+import { blogPosts } from '@/content/blogPosts'
 
 /**
  * Camada de dados única para todo o site. Cada função tenta o Sanity
@@ -45,6 +56,9 @@ const REVALIDATE_TAGS = {
   testimonials: 'testimonials',
   clientLogos: 'clientLogos',
   gallery: 'gallery',
+  interviews: 'interviews',
+  usefulLinks: 'usefulLinks',
+  careerTips: 'careerTips',
   siteSettings: 'siteSettings',
   navigation: 'navigation',
   homePage: 'homePage',
@@ -56,6 +70,8 @@ export type Post = {
   slug: string
   excerpt?: string
   coverImage?: unknown
+  /** Só existe nos posts importados, onde a capa é um caminho e não um asset. */
+  coverAlt?: string
   body?: unknown
   categoryTitle?: string
   categorySlug?: string
@@ -63,29 +79,12 @@ export type Post = {
   seo?: { title?: string; description?: string }
 }
 
-function seedPostToPost(p: SeedPost): Post {
-  return {
-    _id: p._id,
-    title: p.title,
-    slug: p.slug,
-    excerpt: p.excerpt,
-    categoryTitle: p.categoryTitle,
-    categorySlug: p.categorySlug,
-    publishedAt: p.publishedAt,
-    body: p.body.map((paragraph) => ({
-      _type: 'block',
-      style: 'normal',
-      children: [{ _type: 'span', text: paragraph }],
-    })),
-  }
-}
-
 export async function getPosts(): Promise<Post[]> {
   if (isSanityConfigured && client) {
     const posts = await client.fetch(postsQuery, {}, { next: { tags: [REVALIDATE_TAGS.posts] } })
     if (posts?.length) return posts
   }
-  return seedPosts.map(seedPostToPost)
+  return blogPosts
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -93,12 +92,12 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     const post = await client.fetch(postBySlugQuery, { slug }, { next: { tags: [REVALIDATE_TAGS.posts] } })
     if (post) return post
   }
-  const seedPost = seedPosts.find((p) => p.slug === slug)
-  return seedPost ? seedPostToPost(seedPost) : null
+  return blogPosts.find((p) => p.slug === slug) ?? null
 }
 
-export type Service = Omit<SeedService, 'image' | 'body'> & {
+export type Service = Omit<SeedService, 'image' | 'headerImage' | 'body'> & {
   image?: unknown
+  headerImage?: unknown
   highlights?: string[]
   body?: unknown
   seo?: unknown
@@ -213,11 +212,52 @@ export async function getClientLogos(): Promise<ClientLogo[]> {
   return seedClientLogos
 }
 
-export async function getGallery() {
+export type GalleryItem = Omit<SeedGalleryItem, 'image'> & { image: unknown }
+
+export async function getGallery(): Promise<GalleryItem[]> {
   if (isSanityConfigured && client) {
-    return client.fetch(galleryQuery, {}, { next: { tags: [REVALIDATE_TAGS.gallery] } })
+    const items = await client.fetch(galleryQuery, {}, { next: { tags: [REVALIDATE_TAGS.gallery] } })
+    if (items?.length) return items
   }
-  return []
+  return seedGallery
+}
+
+export type Interview = SeedInterview & { coverImage?: unknown; videoUrl?: string; body?: unknown; seo?: unknown }
+
+export async function getInterviews(): Promise<Interview[]> {
+  if (isSanityConfigured && client) {
+    const interviews = await client.fetch(interviewsQuery, {}, { next: { tags: [REVALIDATE_TAGS.interviews] } })
+    if (interviews?.length) return interviews
+  }
+  return seedInterviews
+}
+
+export async function getInterviewBySlug(slug: string): Promise<Interview | null> {
+  if (isSanityConfigured && client) {
+    const interview = await client.fetch(
+      interviewBySlugQuery,
+      { slug },
+      { next: { tags: [REVALIDATE_TAGS.interviews] } },
+    )
+    if (interview) return interview
+  }
+  return seedInterviews.find((i) => i.slug === slug) ?? null
+}
+
+export async function getUsefulLinks(): Promise<SeedUsefulLink[]> {
+  if (isSanityConfigured && client) {
+    const links = await client.fetch(usefulLinksQuery, {}, { next: { tags: [REVALIDATE_TAGS.usefulLinks] } })
+    if (links?.length) return links
+  }
+  return seedUsefulLinks
+}
+
+export async function getCareerTips(): Promise<SeedCareerTip[]> {
+  if (isSanityConfigured && client) {
+    const tips = await client.fetch(careerTipsQuery, {}, { next: { tags: [REVALIDATE_TAGS.careerTips] } })
+    if (tips?.length) return tips
+  }
+  return seedCareerTips
 }
 
 export async function getSiteSettings() {
@@ -252,6 +292,9 @@ export const revalidateTagsByType: Record<string, string> = {
   testimonial: REVALIDATE_TAGS.testimonials,
   clientLogo: REVALIDATE_TAGS.clientLogos,
   galleryItem: REVALIDATE_TAGS.gallery,
+  interview: REVALIDATE_TAGS.interviews,
+  usefulLink: REVALIDATE_TAGS.usefulLinks,
+  careerTip: REVALIDATE_TAGS.careerTips,
   siteSettings: REVALIDATE_TAGS.siteSettings,
   navigation: REVALIDATE_TAGS.navigation,
   homePage: REVALIDATE_TAGS.homePage,

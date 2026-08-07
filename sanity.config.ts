@@ -11,7 +11,9 @@ import { structure } from './src/sanity/structure'
 export default defineConfig({
   name: 'valorizarte',
   title: 'Valorizarte — Painel de conteúdo',
-  basePath: '/studio',
+  // '/' porque o Studio é hospedado à parte (valorizarte.sanity.studio),
+  // não embutido em /studio dentro do Next — ver seção "Hospedagem" do README.
+  basePath: '/',
   projectId,
   dataset,
   schema,

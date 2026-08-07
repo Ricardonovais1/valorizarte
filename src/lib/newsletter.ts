@@ -31,7 +31,7 @@ async function sendWelcomeEmail(email: string, name?: string) {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #133453;">
       <div style="background: #133453; padding: 24px; text-align: center;">
-        <span style="color: #d6ad87; font-size: 22px; font-weight: bold; letter-spacing: 1px;">VALORIZARTE</span>
+        <span style="color: #a48e79; font-size: 22px; font-weight: bold; letter-spacing: 1px;">VALORIZARTE</span>
       </div>
       <div style="padding: 24px;">
         <h1 style="font-size: 20px; margin: 0 0 16px;">Bem-vindo${greetingName}!</h1>

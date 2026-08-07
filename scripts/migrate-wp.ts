@@ -1,112 +1,67 @@
 /**
- * Migra posts do WordPress (valorizarte.com.br) para o Sanity.
+ * Migra os posts do blog do WordPress (valorizarte.com.br) para o Sanity.
  *
  * Uso:
- *   npx tsx scripts/migrate-wp.ts
+ *   npm run migrate                      # dataset do .env.local
+ *   npm run migrate -- --dataset=staging # ensaio num dataset separado
+ *   npm run migrate -- --dry-run         # só mostra o que faria, não grava
  *
  * Requer no .env.local: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET
  * e SANITY_API_WRITE_TOKEN (token com permissão de Editor, gerado em
  * manage.sanity.io -> API -> Tokens).
  *
- * O script é IDEMPOTENTE: cada post e categoria recebe um _id determinístico
- * a partir do ID do WordPress (ex: "post-3016"). Rodar de novo atualiza os
- * documentos existentes em vez de duplicá-los — pode rodar quantas vezes
- * quiser durante o desenvolvimento.
+ * Usa a MESMA conversão de HTML que o `npm run import:blog` (scripts/lib/
+ * wordpress.ts), então o conteúdo no Studio sai idêntico ao que já está no
+ * ar: títulos, listas aninhadas, negrito, itálico, sublinhado, links e as
+ * imagens dentro do texto — que sobem como assets e viram blocos richImage,
+ * editáveis pelo Studio como qualquer outra imagem.
  *
- * NOTA IMPORTANTE: este script não pôde ser executado de ponta a ponta
- * dentro do ambiente onde este projeto foi montado (um sandbox com acesso
- * de rede restrito a poucos domínios). Ele foi escrito e revisado com
- * cuidado a partir da estrutura real da API do WordPress do site (testada
- * via outra via de acesso), mas rode primeiro com um dataset de teste
- * (`--dataset=staging`, por exemplo) e confira 3-4 posts publicados antes
- * de rodar contra o dataset de produção.
+ * O script é IDEMPOTENTE: cada post e categoria recebe um _id determinístico
+ * a partir do ID do WordPress (ex: "post-3016"), e cada imagem é enviada uma
+ * única vez por URL de origem. Rodar de novo atualiza os documentos
+ * existentes em vez de duplicá-los.
+ *
+ * Recomendação: rode primeiro com `--dataset=staging`, confira 3-4 posts no
+ * Studio, e só então rode contra o dataset de produção.
  */
 import { createClient } from '@sanity/client'
-import { htmlToBlocks } from '@portabletext/block-tools'
-import { Schema } from '@sanity/schema'
-import { JSDOM } from 'jsdom'
 import 'dotenv/config'
+import {
+  convertHtmlToBlocks,
+  decodeText,
+  excerptFrom,
+  fetchAllPages,
+  fetchOptimizedImage,
+  seoTitleFor,
+  WP_BASE_URL,
+  type ImageBlock,
+  type ImageFields,
+  type WpCategory,
+  type WpPost,
+} from './lib/wordpress'
 
-const WP_BASE_URL = process.env.WP_BASE_URL || 'https://valorizarte.com.br'
+const args = process.argv.slice(2)
+const dryRun = args.includes('--dry-run')
+const datasetOverride = args.find((a) => a.startsWith('--dataset='))?.split('=')[1]
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+const dataset = datasetOverride || process.env.NEXT_PUBLIC_SANITY_DATASET
 const token = process.env.SANITY_API_WRITE_TOKEN
 
-if (!projectId || !dataset || !token) {
+// O dry-run não fala com o Sanity, então roda sem nenhuma configuração —
+// serve para conferir a conversão antes de ter o projeto criado.
+if (!dryRun && (!projectId || !dataset || !token)) {
   console.error(
-    'Faltam variáveis de ambiente. Defina NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET e SANITY_API_WRITE_TOKEN no .env.local antes de rodar a migração.',
+    'Faltam variáveis de ambiente. Defina NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET e SANITY_API_WRITE_TOKEN no .env.local antes de rodar a migração.\n' +
+      'Para conferir a conversão sem gravar nada: npm run migrate -- --dry-run',
   )
   process.exit(1)
 }
 
-const client = createClient({
-  projectId,
-  dataset,
-  apiVersion: '2025-01-01',
-  token,
-  useCdn: false,
-})
-
-// Schema mínimo, usado só para o conversor de HTML->Portable Text saber
-// quais estilos/decorators são válidos (precisa espelhar src/sanity/schemaTypes/objects/portableBody.ts).
-const blockContentSchema = Schema.compile({
-  name: 'default',
-  types: [
-    {
-      type: 'object',
-      name: 'blogPost',
-      fields: [
-        {
-          title: 'Body',
-          name: 'body',
-          type: 'array',
-          of: [{ type: 'block' }, { type: 'image' }],
-        },
-      ],
-    },
-  ],
-})
-const blockContentType = blockContentSchema
-  .get('blogPost')
-  .fields.find((field: { name: string }) => field.name === 'body').type
-
-type WpPost = {
-  id: number
-  slug: string
-  date: string
-  title: { rendered: string }
-  excerpt: { rendered: string }
-  content: { rendered: string }
-  categories: number[]
-  featured_media: number
-  yoast_head_json?: { title?: string; description?: string }
-}
-
-type WpCategory = { id: number; name: string; slug: string }
-type WpMedia = { id: number; source_url: string; alt_text?: string }
-
-async function fetchAllPages<T>(path: string): Promise<T[]> {
-  const results: T[] = []
-  let page = 1
-  // WordPress limita per_page a 100; pagina até a API responder vazio.
-  while (true) {
-    const res = await fetch(`${WP_BASE_URL}/wp-json/wp/v2${path}${path.includes('?') ? '&' : '?'}per_page=100&page=${page}`)
-    if (res.status === 400) break // página além do total: WP retorna 400
-    if (!res.ok) throw new Error(`Falha ao buscar ${path} (página ${page}): ${res.status}`)
-    const batch = (await res.json()) as T[]
-    if (!batch.length) break
-    results.push(...batch)
-    page += 1
-  }
-  return results
-}
-
-function stripLegacyEmbeds(html: string): string {
-  // Remove atributos e tags que não têm equivalente em Portable Text e
-  // que o htmlToBlocks não sabe descartar sozinho.
-  return html.replace(/<script[\s\S]*?<\/script>/gi, '')
-}
+const client =
+  dryRun || !projectId || !dataset
+    ? null
+    : createClient({ projectId, dataset, apiVersion: '2025-01-01', token, useCdn: false })
 
 async function migrateCategories(): Promise<Map<number, string>> {
   console.log('Buscando categorias...')
@@ -116,86 +71,123 @@ async function migrateCategories(): Promise<Map<number, string>> {
   for (const cat of categories) {
     const docId = `category-${cat.id}`
     idToDocId.set(cat.id, docId)
-    await client.createIfNotExists({
-      _id: docId,
-      _type: 'category',
-      title: cat.name,
-      slug: { _type: 'slug', current: cat.slug },
-    })
+    if (client) {
+      await client.createIfNotExists({
+        _id: docId,
+        _type: 'category',
+        title: decodeText(cat.name),
+        slug: { _type: 'slug', current: cat.slug },
+      })
+    }
   }
-  console.log(`  ${categories.length} categorias migradas.`)
+  console.log(`  ${categories.length} categorias.`)
   return idToDocId
 }
 
-async function uploadImageFromUrl(url: string, altText: string) {
+// Uma URL do WordPress = um asset no Sanity, por mais posts que a usem.
+const uploadedAssets = new Map<string, string>()
+
+/**
+ * Baixa a imagem do WordPress, otimiza (o mesmo tratamento do site: teto de
+ * 1600px e JPEG quando não há transparência) e sobe como asset do Sanity.
+ * Devolve a referência pronta para entrar num campo de imagem.
+ */
+async function uploadImage(rawUrl: string): Promise<ImageFields | undefined> {
+  const url = rawUrl.replace(/^http:\/\//, 'https://')
+  const cached = uploadedAssets.get(url)
+  if (cached) return { asset: { _type: 'reference', _ref: cached } }
+
   try {
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`status ${res.status}`)
-    const buffer = Buffer.from(await res.arrayBuffer())
-    const filename = url.split('/').pop() || 'imagem.jpg'
-    const asset = await client.assets.upload('image', buffer, { filename })
-    return {
-      _type: 'richImage',
-      asset: { _type: 'reference', _ref: asset._id },
-      alt: altText || filename,
+    const { data, fileName, originalBytes } = await fetchOptimizedImage(url)
+
+    if (!client) {
+      const fakeRef = `image-dry-run-${fileName}`
+      uploadedAssets.set(url, fakeRef)
+      console.log(`    ↑ [dry-run] ${fileName} (${(data.length / 1024).toFixed(0)} KB)`)
+      return { asset: { _type: 'reference', _ref: fakeRef } }
     }
+
+    const asset = await client.assets.upload('image', data, { filename: fileName })
+    uploadedAssets.set(url, asset._id)
+    const reduction = Math.round((1 - data.length / originalBytes) * 100)
+    console.log(`    ↑ ${fileName} (${(data.length / 1024).toFixed(0)} KB, -${reduction}%)`)
+    return { asset: { _type: 'reference', _ref: asset._id } }
   } catch (err) {
-    console.warn(`  [aviso] falha ao subir imagem ${url}:`, (err as Error).message)
+    console.warn(`    [aviso] falha ao subir ${url}: ${(err as Error).message}`)
     return undefined
   }
 }
 
 async function migratePosts(categoryMap: Map<number, string>) {
-  console.log('Buscando posts...')
-  const [posts, media] = await Promise.all([
-    fetchAllPages<WpPost>('/posts'),
-    fetchAllPages<WpMedia>('/media'),
-  ])
-  const mediaById = new Map(media.map((m) => [m.id, m]))
-
-  console.log(`  ${posts.length} posts encontrados. Convertendo e enviando...`)
+  console.log('\nBuscando posts...')
+  const posts = await fetchAllPages<WpPost>('/posts?_embed=1&orderby=date&order=desc')
+  console.log(`  ${posts.length} posts. Convertendo e enviando...\n`)
 
   for (const post of posts) {
-    const cleanHtml = stripLegacyEmbeds(post.content.rendered)
-    const { window } = new JSDOM('')
+    const title = decodeText(post.title.rendered)
+    console.log(`  ${post.slug}`)
 
-    const body = htmlToBlocks(cleanHtml, blockContentType, {
-      parseHtml: (html: string) => new JSDOM(html).window.document,
-    })
+    const body = await convertHtmlToBlocks(post.content.rendered, title, uploadImage)
 
-    const featuredMedia = mediaById.get(post.featured_media)
-    const coverImage = featuredMedia
-      ? await uploadImageFromUrl(featuredMedia.source_url, featuredMedia.alt_text || post.title.rendered)
+    // Sem imagem destacada no WordPress, a primeira imagem do corpo vira a
+    // capa — mesma regra do conteúdo que já está no ar.
+    const featured = post._embedded?.['wp:featuredmedia']?.[0]
+    const featuredFields = featured?.source_url ? await uploadImage(featured.source_url) : undefined
+    const firstBodyImage = body.find((b): b is ImageBlock => b._type === 'richImage')
+
+    const coverFields = featuredFields ?? (firstBodyImage ? { asset: firstBodyImage.asset } : undefined)
+    const coverAlt = featuredFields ? decodeText(featured?.alt_text || '') || title : firstBodyImage?.alt
+
+    const categoryRef = categoryMap.get(post.categories?.[0])
+    const seoTitle = seoTitleFor(post.yoast_head_json?.title, title)
+    const seoDescription = post.yoast_head_json?.description
+      ? decodeText(post.yoast_head_json.description)
       : undefined
 
-    const firstCategoryId = post.categories?.[0]
-    const categoryRef = firstCategoryId ? categoryMap.get(firstCategoryId) : undefined
-
-    await client.createOrReplace({
+    const doc = {
       _id: `post-${post.id}`,
       _type: 'post',
-      title: post.title.rendered,
+      title,
       slug: { _type: 'slug', current: post.slug },
-      excerpt: post.excerpt.rendered.replace(/<[^>]+>/g, '').trim(),
+      excerpt: excerptFrom(post.excerpt.rendered),
       publishedAt: post.date,
       body,
-      ...(coverImage ? { coverImage } : {}),
+      ...(coverFields ? { coverImage: { _type: 'richImage', ...coverFields, alt: coverAlt || title } } : {}),
       ...(categoryRef ? { category: { _type: 'reference', _ref: categoryRef } } : {}),
-      seo: {
-        title: post.yoast_head_json?.title,
-        description: post.yoast_head_json?.description,
-      },
-    })
-    console.log(`  ✓ ${post.slug}`)
-    window.close()
+      ...(seoTitle || seoDescription
+        ? {
+            seo: {
+              ...(seoTitle ? { title: seoTitle } : {}),
+              ...(seoDescription ? { description: seoDescription } : {}),
+            },
+          }
+        : {}),
+    }
+
+    const images = body.filter((b) => b._type === 'richImage').length
+    if (client) {
+      await client.createOrReplace(doc)
+      console.log(`    ✓ gravado — ${body.length} blocos, ${images} imagens no corpo`)
+    } else {
+      console.log(`    [dry-run] ${body.length} blocos, ${images} imagens no corpo`)
+    }
   }
 }
 
 async function main() {
-  console.log(`Migrando conteúdo de ${WP_BASE_URL} para o dataset "${dataset}" do projeto ${projectId}.\n`)
+  console.log(
+    `Migrando o blog de ${WP_BASE_URL} para o dataset "${dataset}" do projeto ${projectId}.` +
+      (dryRun ? ' (dry-run: nada será gravado)' : '') +
+      '\n',
+  )
   const categoryMap = await migrateCategories()
   await migratePosts(categoryMap)
   console.log('\nMigração concluída.')
+  if (!dryRun) {
+    console.log(
+      'Confira os posts em https://valorizarte.sanity.studio e, se estiver tudo certo, o site passa a servir o Sanity automaticamente.',
+    )
+  }
 }
 
 main().catch((err) => {

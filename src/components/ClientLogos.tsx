@@ -6,7 +6,7 @@ import { SectionHeading } from './SectionHeading'
 
 const SECONDS_PER_LOGO = 4
 
-export function ClientLogos({ logos }: { logos: ClientLogo[] }) {
+export function ClientLogos({ logos, id }: { logos: ClientLogo[]; id?: string }) {
   if (logos.length === 0) return null
 
   // Duplicamos a lista para o loop infinito: a track anima de 0 a -50%
@@ -14,7 +14,7 @@ export function ClientLogos({ logos }: { logos: ClientLogo[] }) {
   const track = [...logos, ...logos]
 
   return (
-    <section className="bg-sage py-16">
+    <section className="scroll-mt-24 bg-sage py-16" id={id}>
       <Container>
         <SectionHeading title="Principais Clientes" />
         <div className="mt-10 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">

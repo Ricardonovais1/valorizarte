@@ -1,0 +1,57 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+	"name": "valorizarte",
+	"compatibility_date": "2026-08-01",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			// Self-reference: necessário para o OpenNext encaminhar requisições
+			// internamente (streaming, ISR). O nome do serviço tem que ser
+			// igual ao "name" acima.
+			// https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "valorizarte"
+		}
+	],
+	"r2_buckets": [
+		// Cache de páginas renderizadas (incremental cache do Next).
+		// Criar antes do primeiro deploy: npx wrangler r2 bucket create valorizarte-cache
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "valorizarte-cache"
+		}
+	],
+	"d1_databases": [
+		// Guarda qual tag/rota foi revalidada e quando — é o que faz o
+		// webhook do Sanity (revalidateTag) realmente invalidar o cache em
+		// todos os pontos de borda, não só na instância que recebeu o hit.
+		// Criar antes do primeiro deploy: npx wrangler d1 create valorizarte-tag-cache
+		{
+			"binding": "NEXT_TAG_CACHE_D1",
+			"database_name": "valorizarte-tag-cache",
+			"database_id": "<PREENCHER_APOS_WRANGLER_D1_CREATE>"
+		}
+	],
+	"images": {
+		// Habilita o otimizador de imagens do Cloudflare para next/image.
+		"binding": "IMAGES"
+	},
+	"observability": {
+		"enabled": true
+	},
+	// Variáveis não sensíveis (segredos como SANITY_API_WRITE_TOKEN vão por
+	// `npx wrangler secret put`, não aqui — ver seção 7 do README).
+	"vars": {
+		"NEXT_PUBLIC_SANITY_PROJECT_ID": "<PREENCHER>",
+		"NEXT_PUBLIC_SANITY_DATASET": "production",
+		"NEXT_PUBLIC_SANITY_API_VERSION": "2025-01-01",
+		"NEXT_PUBLIC_SITE_URL": "https://valorizarte.com.br",
+		"BREVO_SENDER_EMAIL": "contato@valorizarte.com.br",
+		"BREVO_SENDER_NAME": "Valorizarte"
+	}
+}

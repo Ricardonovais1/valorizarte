@@ -12,7 +12,7 @@ export function PostCard({ post }: { post: Post }) {
         {imageUrl ? (
           <Image
             src={imageUrl}
-            alt={(post.coverImage as { alt?: string })?.alt || post.title}
+            alt={post.coverAlt || (post.coverImage as { alt?: string })?.alt || post.title}
             width={600}
             height={375}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"

@@ -26,7 +26,7 @@ export function IntroCards() {
   return (
     <section className="bg-wave-navy pb-16 pt-24">
       <Container>
-        <div className="relative z-10 -mt-32 grid gap-6 sm:grid-cols-3">
+        <div className="relative z-10 -mt-64 grid gap-6 sm:grid-cols-3">
           {cards.map((card) => (
             <div
               key={card.title}

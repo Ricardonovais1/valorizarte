@@ -37,9 +37,20 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('Logos de clientes')
         .child(S.documentTypeList('clientLogo').title('Logos de clientes')),
+      S.divider(),
       S.listItem()
-        .title('Galeria de fotos')
-        .child(S.documentTypeList('galleryItem').title('Galeria de fotos')),
+        .title('Mídia')
+        .icon(() => '🎙️')
+        .child(
+          S.list()
+            .title('Mídia')
+            .items([
+              S.documentTypeListItem('interview').title('Entrevistas'),
+              S.documentTypeListItem('galleryItem').title('Galeria de fotos'),
+              S.documentTypeListItem('usefulLink').title('Links importantes'),
+              S.documentTypeListItem('careerTip').title('Dicas de carreira'),
+            ]),
+        ),
       S.divider(),
       S.listItem()
         .title('Inscritos na newsletter')

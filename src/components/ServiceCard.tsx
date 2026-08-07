@@ -12,6 +12,8 @@ export function ServiceCard({
   dark?: boolean
   size?: 'md' | 'lg'
 }) {
+  const blurb = service.cardSummary || service.summary
+
   if (variant === 'plain') {
     return (
       <Link href={`/empresas/${service.slug}`} className="group flex flex-col">
@@ -20,13 +22,13 @@ export function ServiceCard({
         >
           {service.title}
         </h3>
-        {service.summary && (
+        {blurb && (
           <p
             className={`mt-2 leading-relaxed ${size === 'lg' ? 'text-base' : 'text-sm'} ${
               dark ? 'text-white/70' : 'text-slate-600'
             }`}
           >
-            {service.summary}
+            {blurb}
           </p>
         )}
         <span
@@ -46,7 +48,7 @@ export function ServiceCard({
       className="group flex flex-col rounded-[3px] bg-navy p-6 transition hover:brightness-110"
     >
       <h3 className="text-base font-semibold text-white">{service.title}</h3>
-      {service.summary && <p className="mt-2 text-sm text-white/70">{service.summary}</p>}
+      {blurb && <p className="mt-2 text-sm text-white/70">{blurb}</p>}
       <span className="mt-4 text-sm font-medium text-teal">Saiba mais →</span>
     </Link>
   )

@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 import { Container } from '@/components/Container'
-import { PageHeader } from '@/components/PageHeader'
 import { PortableTextRenderer } from '@/components/PortableTextRenderer'
 import { BoldText } from '@/components/BoldText'
+import { ServiceTabs } from '@/components/ServiceTabs'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { resolveImage } from '@/lib/resolveImage'
 import { getServiceBySlug, getServices } from '@/lib/data'
@@ -29,72 +29,136 @@ export async function generateMetadata({
   }
 }
 
-function ServiceImage({ src, alt }: { src?: string; alt: string }) {
-  return (
-    <div className="mx-auto w-full max-w-sm overflow-hidden rounded-[3px] lg:mx-0 lg:max-w-none">
-      {src ? (
-        <Image src={src} alt={alt} width={420} height={470} className="h-full w-full object-cover" />
-      ) : (
-        <div className="flex aspect-[4/3] w-full items-center justify-center bg-navy">
-          <Image src="/images/logo-gold-icon.png" alt="" width={63} height={40} />
-        </div>
-      )}
-    </div>
-  )
-}
-
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const service = await getServiceBySlug(slug)
   if (!service) notFound()
 
   const imageUrl = resolveImage(service.image, { width: 420, height: 470 })
-  const hasContent = Boolean(service.body || (service.highlights && service.highlights.length > 0))
+  const headerImageUrl = resolveImage(service.headerImage, { width: 1600, height: 300 })
+  const tabSections = service.tabSections ?? []
+  const hasContent = Boolean(
+    service.body || (service.highlights && service.highlights.length > 0) || tabSections.length > 0,
+  )
 
-  return (
-    <>
-      <PageHeader title={service.title} icon />
-      <Container className="space-y-12 py-12">
-        {service.summary && (
-          <p className="mx-auto max-w-3xl text-center text-[30px] font-semibold leading-tight text-navy">
-            {service.summary}
+  const textBlock = (
+    <div className="font-roboto text-[17px] leading-relaxed text-slate-700">
+      {Boolean(service.body) && <PortableTextRenderer value={service.body} />}
+
+      {service.highlights && service.highlights.length > 0 && (
+        <ul className="mt-2 space-y-3">
+          {service.highlights.map((item, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <Check size={18} className="mt-0.5 shrink-0 text-teal" />
+              <span>
+                <BoldText text={item} />
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {service.closingText && <p className="mt-6">{service.closingText}</p>}
+    </div>
+  )
+
+  const content = (
+    <div className="space-y-12">
+      {headerImageUrl ? (
+        <h1 className="sr-only">{service.title}</h1>
+      ) : (
+        <div className="flex items-center justify-center gap-3">
+          <Image src="/images/logo-gold-icon.png" alt="" width={40} height={26} />
+          <h1 className="text-3xl font-bold text-navy sm:text-4xl">{service.title}</h1>
+        </div>
+      )}
+
+      {service.summary && (
+        <p className="mx-auto max-w-3xl text-center text-[30px] font-semibold leading-tight text-navy">
+          {service.summary}
+        </p>
+      )}
+
+      <div className="space-y-16">
+        {tabSections.length > 0 &&
+          tabSections.map((section, i) => {
+            const sectionImageUrl = resolveImage(section.image ?? service.image, { width: 420, height: 470 })
+            return (
+              <div key={i}>
+                {section.title && <h2 className="mb-6 text-2xl font-bold text-navy">{section.title}</h2>}
+                <div className="grid gap-6 lg:grid-cols-[30%_1fr] lg:items-start">
+                  {sectionImageUrl && (
+                    <div className="mx-auto w-full max-w-sm overflow-hidden rounded-[3px] lg:mx-0 lg:max-w-none">
+                      <Image
+                        src={sectionImageUrl}
+                        alt={section.title || service.title}
+                        width={420}
+                        height={470}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="font-roboto text-[17px] leading-relaxed text-slate-700">
+                    <ServiceTabs tabs={section.tabs} />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+
+        {tabSections.length === 0 && hasContent && (
+          <>
+            {imageUrl ? (
+              <div className="grid gap-6 lg:grid-cols-[30%_1fr] lg:items-start">
+                <div className="mx-auto w-full max-w-sm overflow-hidden rounded-[3px] lg:mx-0 lg:max-w-none">
+                  <Image
+                    src={imageUrl}
+                    alt={service.title}
+                    width={420}
+                    height={470}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                {textBlock}
+              </div>
+            ) : (
+              <div className="mx-auto max-w-3xl">{textBlock}</div>
+            )}
+          </>
+        )}
+
+        {!hasContent && (
+          <p className="rounded-[3px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+            A descrição completa deste serviço ainda não foi cadastrada no Studio.
           </p>
         )}
 
-        <div className="space-y-16">
-          {hasContent && (
-            <div className="grid gap-6 lg:grid-cols-[30%_1fr] lg:items-start">
-              <ServiceImage src={imageUrl} alt={service.title} />
-              <div className="font-roboto text-[17px] leading-relaxed text-slate-700">
-                {Boolean(service.body) && <PortableTextRenderer value={service.body} />}
-
-                {service.highlights && service.highlights.length > 0 && (
-                  <ul className="mt-2 space-y-3">
-                    {service.highlights.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <Check size={18} className="mt-0.5 shrink-0 text-teal" />
-                        <span>
-                          <BoldText text={item} />
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
-
-          {!hasContent && (
-            <p className="rounded-[3px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-              A descrição completa deste serviço ainda não foi cadastrada no Studio.
-            </p>
-          )}
-
-          <div className="mx-auto max-w-2xl">
-            <NewsletterForm source={`service-${slug}`} />
-          </div>
+        <div className="mx-auto max-w-2xl">
+          <NewsletterForm source={`service-${slug}`} />
         </div>
-      </Container>
-    </>
+      </div>
+    </div>
+  )
+
+  if (!headerImageUrl) {
+    return <Container className="space-y-12 pb-12 pt-14">{content}</Container>
+  }
+
+  return (
+    <Container className="py-10">
+      <div className="bg-white p-8 sm:p-10">
+        <div className="relative aspect-[16/3] w-full overflow-hidden rounded-[3px] bg-navy">
+          <Image
+            src={headerImageUrl}
+            alt={service.title}
+            fill
+            priority
+            sizes="(min-width: 1280px) 1152px, 90vw"
+            className="object-cover"
+          />
+        </div>
+        <div className="mt-10">{content}</div>
+      </div>
+    </Container>
   )
 }

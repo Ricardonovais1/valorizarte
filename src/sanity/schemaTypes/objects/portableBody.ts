@@ -27,6 +27,7 @@ export const portableBody = defineType({
         decorators: [
           { title: 'Negrito', value: 'strong' },
           { title: 'Itálico', value: 'em' },
+          { title: 'Sublinhado', value: 'underline' },
         ],
         annotations: [
           {
