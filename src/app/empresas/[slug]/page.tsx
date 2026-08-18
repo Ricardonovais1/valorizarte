@@ -49,7 +49,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <ul className="mt-2 space-y-3">
           {service.highlights.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
-              <Check size={18} className="mt-0.5 shrink-0 text-teal" />
+              <Check size={18} className="mt-0.5 shrink-0 text-teal-deep" />
               <span>
                 <BoldText text={item} />
               </span>
@@ -85,7 +85,6 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             const sectionImageUrl = resolveImage(section.image ?? service.image, { width: 420, height: 470 })
             return (
               <div key={i}>
-                {section.title && <h2 className="mb-6 text-2xl font-bold text-navy">{section.title}</h2>}
                 <div className="grid gap-6 lg:grid-cols-[30%_1fr] lg:items-start">
                   {sectionImageUrl && (
                     <div className="mx-auto w-full max-w-sm overflow-hidden rounded-[3px] lg:mx-0 lg:max-w-none">
@@ -98,8 +97,11 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                       />
                     </div>
                   )}
-                  <div className="font-roboto text-[17px] leading-relaxed text-slate-700">
-                    <ServiceTabs tabs={section.tabs} />
+                  <div>
+                    {section.title && <h2 className="mb-4 text-2xl font-bold text-navy">{section.title}</h2>}
+                    <div className="font-roboto text-[17px] leading-relaxed text-slate-700">
+                      <ServiceTabs tabs={section.tabs} />
+                    </div>
                   </div>
                 </div>
               </div>

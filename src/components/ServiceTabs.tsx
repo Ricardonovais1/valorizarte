@@ -8,6 +8,18 @@ export function ServiceTabs({ tabs }: { tabs: { label: string; body: string }[] 
 
   if (tabs.length === 0) return null
 
+  const body = (
+    <div className="flex-1 space-y-4">
+      {tabs[active].body.split(/\n\n+/).map((paragraph, i) => (
+        <p key={i}>
+          <BoldText text={paragraph} />
+        </p>
+      ))}
+    </div>
+  )
+
+  if (tabs.length === 1) return body
+
   return (
     <div className="flex flex-col gap-6 sm:flex-row">
       <div className="flex shrink-0 flex-col gap-1 sm:w-44">
@@ -24,9 +36,7 @@ export function ServiceTabs({ tabs }: { tabs: { label: string; body: string }[] 
           </button>
         ))}
       </div>
-      <p className="flex-1">
-        <BoldText text={tabs[active].body} />
-      </p>
+      {body}
     </div>
   )
 }

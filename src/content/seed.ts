@@ -487,13 +487,38 @@ export const seedServices: SeedService[] = [
     cardSummary:
       'Ferramentas de diagnóstico pessoal e profissional para análise de perfil, competências e potencial, auxiliando no desenvolvimento de talentos e na tomada de decisões estratégicas de carreira.',
     image: '/images/services/assessments.png',
-    body: [
-      '## MBTI Step II',
-      'MBTI significa Myers-Briggs Type Indicator (Indicador de Tipos de Myers-Briggs). É um teste de personalidade baseado na teoria dos tipos psicológicos de Carl Jung, desenvolvido por Isabel Briggs Myers e Katharine Cook Briggs. Tem como objetivo a indicação de aspectos da personalidade, proporcionando autoconhecimento através do destaque dos pontos fortes e dos pontos a serem observados, a fim de trabalhar o desenvolvimento pessoal e profissional do indivíduo.',
-      '## DISC',
-      'O DISC é um modelo de avaliação comportamental baseado na teoria do psicólogo William Moulton Marston. Este teste oferece uma representação gráfica e quantitativa do perfil comportamental, seja individual ou da equipe, destacando de forma clara as forças, preferências, estilo de liderança e vulnerabilidades de cada pessoa, ajudando a prever como ela age e interage com os outros.',
-      '## Facet5',
-      'O Facet5 identifica os 5 principais elementos de base de personalidade – divididos em 13 subfatores. É o padrão de pontuações que verificamos em cada um dos fatores que fornece uma imagem geral da nossa personalidade. Os fatores medidos pelo Facet5 são: **Determinação, Energia, Afetividade, Controle e Emocionalidade**.',
+    headerImage: '/images/services/assessments-header.webp',
+    tabSections: [
+      {
+        title: 'MBTI Step II',
+        image: '/images/services/assessments-mbti.webp',
+        tabs: [
+          {
+            label: 'MBTI Step II',
+            body: 'MBTI significa **Myers-Briggs Type Indicator** (Indicador de Tipos de Myers-Briggs).\n\nÉ um teste de personalidade baseado na teoria dos tipos psicológicos de Carl Jung, desenvolvido por **Isabel Briggs Myers** e **Katharine Cook Briggs**.\n\nTem como objetivo a indicação de aspectos da personalidade, proporcionando autoconhecimento através do destaque dos pontos fortes e dos pontos a serem observados, a fim de trabalhar o desenvolvimento pessoal e profissional do indivíduo.',
+          },
+        ],
+      },
+      {
+        title: 'DISC',
+        image: '/images/services/assessments-disc.webp',
+        tabs: [
+          {
+            label: 'DISC',
+            body: 'O **DISC** é um modelo de avaliação comportamental baseado na teoria do psicólogo William Moulton Marston.\n\nEste teste oferece uma representação gráfica e quantitativa do perfil comportamental, seja individual ou da equipe.\n\nEle destaca de forma clara as forças, preferências, estilo de liderança e vulnerabilidades de cada pessoa, ajudando a prever como ela age e interage com os outros.\n\nAlém disso, a avaliação identifica motivações, áreas de desenvolvimento e a maneira como o indivíduo reage a diferentes circunstâncias.',
+          },
+        ],
+      },
+      {
+        title: 'Facet5',
+        image: '/images/services/assessments-facet5.webp',
+        tabs: [
+          {
+            label: 'Facet5',
+            body: 'O **Facet5** identifica os 5 principais elementos de base de personalidade – divididos em 13 subfatores.\n\nTodos temos quantidades variadas de cada fator em nossas personalidades; o valor (pontuação) difere dependendo das nossas preferências pessoais e crenças. É o padrão de "pontuações" que verificamos em cada um dos fatores que fornece uma imagem geral da nossa personalidade. Os fatores medidos pelo Facet5 são: **Determinação, Energia, Afetividade, Controle e Emocionalidade**.',
+          },
+        ],
+      },
     ],
   },
   {
@@ -534,8 +559,21 @@ export const seedServices: SeedService[] = [
     cardSummary:
       'Suporte personalizado para estruturar e impulsionar sua trajetória profissional ou empreendedora, com orientação prática e estratégica.',
     image: '/images/services/assessoria.png',
-    body: [
-      '**Assessoria Outplacement (preparação para novo emprego) · Transição de Carreira – Mudando de Rumo com Segurança.** A transição para um novo emprego exige planejamento e preparação. Nosso processo de outplacement auxilia o profissional a se posicionar de forma competitiva no mercado, utilizando ferramentas e estratégias que aceleram a conquista de novas oportunidades, aumentando a confiança e a assertividade na busca por recolocação.',
+    headerImage: '/images/services/assessoria-header.png',
+    tabSections: [
+      {
+        image: '/images/services/assessoria.png',
+        tabs: [
+          {
+            label: 'Assessoria Outplacement (preparação para novo emprego)',
+            body: 'A transição para um novo emprego exige planejamento e preparação. Nosso processo de outplacement auxilia o profissional a se posicionar de forma competitiva no mercado, utilizando ferramentas e estratégias que aceleram a conquista de novas oportunidades, aumentando a confiança e a assertividade na busca por recolocação.',
+          },
+          {
+            label: 'Transição de Carreira – Mudando de Rumo com Segurança',
+            body: 'Se você deseja mudar de área profissional, ingressar no setor público ou empreender, nosso programa de transição de carreira oferece o suporte necessário para tornar essa mudança mais estruturada e bem-sucedida. Por meio de orientação personalizada, aconselhamento estratégico e compartilhamento de conhecimentos, ajudamos você a construir um caminho profissional alinhado aos seus objetivos e aspirações.',
+          },
+        ],
+      },
     ],
   },
   {
@@ -547,8 +585,21 @@ export const seedServices: SeedService[] = [
     cardSummary:
       'Acompanhamento com mentores experientes para orientar decisões, compartilhar conhecimentos e acelerar o crescimento profissional e empresarial.',
     image: '/images/services/mentoring.png',
-    body: [
-      '**Para empreendedores · Para coaches.** Visa guiar o empreendedor nos processos de definição e abertura de um novo negócio, bem como no desenvolvimento de um negócio já existente de forma segura e sustentável.',
+    headerImage: '/images/services/mentoring-header.webp',
+    tabSections: [
+      {
+        image: '/images/services/mentoring.png',
+        tabs: [
+          {
+            label: 'Para empreendedores',
+            body: 'Visa guiar o empreendedor nos processos de definição e abertura de um novo negócio, bem como no desenvolvimento de um negócio já existente de forma segura e sustentável.',
+          },
+          {
+            label: 'Para coaches',
+            body: 'Tem como objetivo apoiar o Coach em seus processos, possibilitando o desenvolvimento contínuo das competências essenciais do Coaching, resultando em uma maior segurança e assertividade durante os processos e na melhoria geral da performance do profissional.',
+          },
+        ],
+      },
     ],
   },
   {
@@ -560,9 +611,13 @@ export const seedServices: SeedService[] = [
     cardSummary:
       'Capacitações dinâmicas e acessíveis para profissionais que buscam atualização, novas habilidades e crescimento na carreira.',
     image: '/images/services/treinamentos-abertos.png',
+    headerImage: '/images/services/treinamentos-abertos-header.webp',
     body: [
       'Nossos treinamentos abertos são voltados para profissionais que desejam aprimorar suas habilidades, expandir suas oportunidades e alcançar novos patamares na carreira e nos negócios. Com uma abordagem prática e aplicada, trabalhamos temas essenciais para o desenvolvimento profissional e pessoal.',
+      '**Confira algumas das nossas principais opções:**',
     ],
+    closingText:
+      'Além dessas opções, personalizamos palestras, workshops e treinamentos de acordo com as necessidades do grupo. Participe e dê um passo à frente no seu desenvolvimento profissional e pessoal!',
     highlights: [
       '**Liderança Coach – Liderança para Resultados.** Estratégias para liderar com eficiência, inspirar equipes e alcançar metas com alta performance.',
       '**Inovação e Criatividade.** Como desenvolver soluções inovadoras e se destacar em um mercado competitivo.',
