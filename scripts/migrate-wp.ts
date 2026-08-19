@@ -25,7 +25,10 @@
  * Studio, e só então rode contra o dataset de produção.
  */
 import { createClient } from '@sanity/client'
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
+// O Next.js guarda as variáveis em .env.local (não em .env) — carregar ambos,
+// com .env.local tendo precedência.
+loadEnv({ path: ['.env.local', '.env'] })
 import {
   convertHtmlToBlocks,
   decodeText,

@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { Menu, X, ChevronDown } from 'lucide-react'
+import { CtaLink } from './CtaLink'
 import type { NavItem } from './HeaderBar'
 
 const noopSubscribe = () => () => {}
@@ -22,6 +23,27 @@ export function MobileMenu({ items }: { items: NavItem[] }) {
     () => false,
   )
 
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const openRef = useRef<HTMLButtonElement>(null)
+
+  // Trava o scroll do body, fecha no Escape e move o foco para o painel
+  // enquanto o menu está aberto (acessibilidade de teclado/leitor de tela).
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+      openRef.current?.focus()
+    }
+  }, [open])
+
   const menu = (
     <AnimatePresence>
       {open && (
@@ -38,11 +60,16 @@ export function MobileMenu({ items }: { items: NavItem[] }) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.25 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            id="mobile-menu"
             className="fixed inset-y-0 right-0 z-50 flex w-full max-w-xs flex-col overflow-y-auto bg-navy text-white"
           >
             <div className="flex items-center justify-end p-4">
               <button
                 type="button"
+                ref={closeRef}
                 aria-label="Fechar menu"
                 onClick={() => setOpen(false)}
                 className="flex h-10 w-10 items-center justify-center rounded-[5px]"
@@ -95,13 +122,9 @@ export function MobileMenu({ items }: { items: NavItem[] }) {
                   </AnimatePresence>
                 </div>
               ))}
-              <Link
-                href="/#newsletter"
-                onClick={() => setOpen(false)}
-                className="mt-6 inline-block rounded-[5px] bg-gold px-8 py-3 text-center text-sm font-medium text-white"
-              >
+              <CtaLink href="/#newsletter" onClick={() => setOpen(false)} className="mt-6 inline-block px-8 py-3 text-center text-sm">
                 Fale conosco
-              </Link>
+              </CtaLink>
             </nav>
           </motion.div>
         </>
@@ -113,7 +136,10 @@ export function MobileMenu({ items }: { items: NavItem[] }) {
     <div className="md:hidden">
       <button
         type="button"
-        aria-label="Abrir menu"
+        ref={openRef}
+        aria-label={open ? 'Fechar menu' : 'Abrir menu'}
+        aria-expanded={open}
+        aria-controls="mobile-menu"
         onClick={() => setOpen(true)}
         className="flex h-10 w-10 items-center justify-center rounded-[5px] text-navy"
       >

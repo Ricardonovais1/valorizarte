@@ -7,6 +7,7 @@
   --navy-deep: #0f2a43;
   --teal: #2cb1bc;
   --teal-dark: #13919b;
+  --teal-deep: #0e6d73;
   --gold: #a48e79;
   --gold-bright: #f6c94a;
   --sage: #cfe2dd;
@@ -19,6 +20,7 @@
   --color-navy-deep: var(--navy-deep);
   --color-teal: var(--teal);
   --color-teal-dark: var(--teal-dark);
+  --color-teal-deep: var(--teal-deep);
   --color-gold: var(--gold);
   --color-gold-bright: var(--gold-bright);
   --color-sage: var(--sage);
@@ -60,4 +62,92 @@ body {
 .popup-arc-banner {
   border-bottom-left-radius: 50% 40px;
   border-bottom-right-radius: 50% 40px;
+}
+
+/* ==========================================================================
+   Refinamentos de design — botões, texturas e efeitos
+   ========================================================================== */
+
+/* Botão CTA: gradiente de bronze + brilho deslizante + elevação no hover.
+   Aplica-se junto das classes utilitárias (padding, tipografia, cantos). */
+.btn-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--gold) 82%, white) 0%,
+    var(--gold) 52%,
+    color-mix(in srgb, var(--gold) 82%, black) 100%
+  );
+  box-shadow: 0 8px 22px -12px rgba(164, 142, 121, 0.85);
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.65s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+.btn-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -14px rgba(164, 142, 121, 0.95);
+}
+.btn-cta:hover::after {
+  transform: translateX(100%);
+}
+.btn-cta:active {
+  transform: translateY(0);
+}
+.btn-cta:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* Textura de ruído (grain) sutil — usar num overlay com opacidade baixa. */
+.texture-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* Pontos sutis para dar textura a seções claras. */
+.bg-dots {
+  background-image: radial-gradient(rgba(19, 52, 83, 0.07) 1px, transparent 1.6px);
+  background-size: 22px 22px;
+}
+
+/* Elevação de card reutilizável. */
+.card-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 45px -20px rgba(19, 52, 83, 0.45);
+}
+
+/* Respeita quem prefere menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .btn-cta::after {
+    display: none;
+  }
+  .btn-cta:hover,
+  .card-lift:hover {
+    transform: none;
+  }
+  .animate-marquee {
+    animation: none;
+  }
 }

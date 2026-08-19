@@ -72,7 +72,7 @@ export function NewsletterPopup() {
                 <X size={16} />
               </button>
 
-              <div className="popup-arc-banner flex justify-center bg-gold-bright pb-8 pt-8">
+              <div className="popup-arc-banner flex justify-center bg-navy pb-8 pt-8">
                 <Image src="/images/logo-gold-icon.png" alt="" width={110} height={70} />
               </div>
 
@@ -140,7 +140,7 @@ export function NewsletterPopup() {
 
                 <p className="mt-4 text-center text-xs text-slate-500">
                   Não fazemos spam! Leia nossa{' '}
-                  <Link href="/politicas-de-privacidade" className="text-teal-dark underline">
+                  <Link href="/politicas-de-privacidade" className="text-teal-deep underline">
                     política de privacidade
                   </Link>{' '}
                   para mais informações.

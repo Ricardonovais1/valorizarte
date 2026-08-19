@@ -1,12 +1,12 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { resolveImage } from '@/lib/resolveImage'
 import { Container } from './Container'
+import { CtaLink } from './CtaLink'
 
 export type HeroSlide = {
   image?: unknown
@@ -58,7 +58,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
               <Image src={imageUrl} alt="" fill priority className="object-cover" />
             </motion.div>
           )}
-          <div className="absolute inset-0 bg-navy-deep/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/50 to-navy-deep/30" />
         </motion.div>
       </AnimatePresence>
 
@@ -90,12 +90,9 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.55, ease: 'easeOut' }}
             >
-              <Link
-                href={slide.ctaHref}
-                className="mt-8 inline-block rounded-[5px] bg-gold px-[50px] py-3 text-sm font-medium text-white transition hover:brightness-95"
-              >
+              <CtaLink href={slide.ctaHref} className="mt-8 inline-block px-[50px] py-3 text-sm">
                 {slide.ctaLabel}
-              </Link>
+              </CtaLink>
             </motion.div>
           )}
         </div>

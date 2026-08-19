@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Container } from './Container'
+import { Reveal } from './Reveal'
 
 const cards = [
   {
@@ -26,18 +27,24 @@ export function IntroCards() {
   return (
     <section className="bg-wave-navy pb-16 pt-24">
       <Container>
-        <div className="relative z-10 -mt-64 grid gap-6 sm:grid-cols-3">
+        <Reveal className="relative z-10 -mt-24 grid gap-6 sm:-mt-64 sm:grid-cols-3">
           {cards.map((card) => (
             <div
               key={card.title}
-              className="flex flex-col items-center rounded-[3px] bg-navy px-8 py-10 text-center shadow-xl"
+              className="card-lift group flex flex-col items-center rounded-[3px] bg-navy px-8 py-10 text-center shadow-xl hover:bg-navy-deep"
             >
-              <Image src={card.icon} alt="" width={64} height={64} />
-              <h3 className="mt-4 text-lg font-semibold text-white">{card.title}</h3>
+              <Image
+                src={card.icon}
+                alt=""
+                width={64}
+                height={64}
+                className="transition-transform duration-300 group-hover:scale-110"
+              />
+              <h3 className="mt-4 text-lg font-semibold text-white transition group-hover:text-teal">{card.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-white/70">{card.description}</p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

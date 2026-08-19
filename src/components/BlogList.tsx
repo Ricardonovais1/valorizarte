@@ -60,7 +60,7 @@ function CategoryDropdown({
               type="button"
               onClick={() => select('')}
               className={`block w-full px-4 py-2 text-left text-sm transition hover:bg-slate-50 ${
-                !value ? 'font-semibold text-teal-dark' : 'text-navy'
+                !value ? 'font-semibold text-teal-deep' : 'text-navy'
               }`}
             >
               Todas as categorias
@@ -72,7 +72,7 @@ function CategoryDropdown({
                 type="button"
                 onClick={() => select(c)}
                 className={`block w-full px-4 py-2 text-left text-sm transition hover:bg-slate-50 ${
-                  value === c ? 'font-semibold text-teal-dark' : 'text-navy'
+                  value === c ? 'font-semibold text-teal-deep' : 'text-navy'
                 }`}
               >
                 {c}

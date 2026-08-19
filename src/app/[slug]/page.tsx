@@ -81,7 +81,7 @@ export default async function CatchAllPage({ params }: { params: Promise<{ slug:
           }
         >
           {post.categoryTitle && (
-            <span className="text-xs font-semibold uppercase tracking-wide text-teal">{post.categoryTitle}</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-teal-deep">{post.categoryTitle}</span>
           )}
           {imageUrl && <h1 className="mt-2 text-3xl font-bold text-navy sm:text-4xl">{post.title}</h1>}
           <p className="mt-3 text-sm text-slate-500">

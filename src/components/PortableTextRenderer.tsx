@@ -42,7 +42,7 @@ const components: PortableTextComponents = {
         href={value?.href}
         target={value?.openInNewTab ? '_blank' : undefined}
         rel={value?.openInNewTab ? 'noopener noreferrer' : undefined}
-        className="text-teal underline underline-offset-2 hover:text-teal-dark"
+        className="text-teal-deep underline underline-offset-2 hover:text-teal-dark"
       >
         {children}
       </a>

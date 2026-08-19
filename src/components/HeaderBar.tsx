@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Container } from './Container'
+import { CtaLink } from './CtaLink'
 import { MobileMenu } from './MobileMenu'
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from './SocialIcons'
 
@@ -44,8 +45,14 @@ export function HeaderBar({
           scrolled ? 'h-14' : 'h-20'
         }`}
       >
-        <Link href="/" className="relative flex items-center" aria-label={siteName}>
-          <AnimatePresence mode="wait" initial={false}>
+        <Link
+          href="/"
+          aria-label={siteName}
+          className={`relative flex h-10 items-center overflow-hidden transition-[width] duration-300 ${
+            scrolled ? 'w-[50px]' : 'w-[164px]'
+          }`}
+        >
+          <AnimatePresence initial={false}>
             {scrolled ? (
               <motion.span
                 key="icon"
@@ -53,6 +60,7 @@ export function HeaderBar({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.2 }}
+                className="absolute left-0 top-1/2 -translate-y-1/2"
               >
                 <Image src="/images/logo-gold-icon.png" alt={siteName} width={50} height={32} priority />
               </motion.span>
@@ -63,6 +71,7 @@ export function HeaderBar({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
+                className="absolute left-0 top-1/2 -translate-y-1/2"
               >
                 <Image src="/images/logo-navy.png" alt={siteName} width={164} height={45} priority />
               </motion.span>
@@ -80,12 +89,12 @@ export function HeaderBar({
                 {item.label}
               </Link>
               {item.children && item.children.length > 0 && (
-                <div className="invisible absolute left-0 top-full z-20 min-w-64 -translate-y-1 rounded-sm bg-navy py-2 opacity-0 shadow-xl transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="invisible absolute left-0 top-full z-20 min-w-64 -translate-y-1 rounded-sm bg-navy py-2 opacity-0 shadow-xl transition-all duration-200 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                   {item.children.map((child) => (
                     <Link
                       key={child.href}
                       href={child.href}
-                      className="block px-5 py-2.5 text-sm text-white/90 transition hover:bg-white/5 hover:text-teal"
+                      className="block px-5 py-2.5 text-sm text-white/90 transition hover:bg-white/5 hover:text-teal focus-visible:bg-white/5 focus-visible:text-teal"
                     >
                       {child.label}
                     </Link>
@@ -104,17 +113,14 @@ export function HeaderBar({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-teal/15 text-teal transition hover:bg-teal hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-teal/15 text-teal-deep transition hover:bg-teal hover:text-white"
             >
               <Icon size={16} />
             </a>
           ))}
-          <Link
-            href="/#newsletter"
-            className="inline-block rounded-[5px] bg-gold px-8 py-2.5 text-sm font-medium text-white transition hover:brightness-95"
-          >
+          <CtaLink href="/#newsletter" className="inline-block px-8 py-2.5 text-sm">
             Fale conosco
-          </Link>
+          </CtaLink>
         </div>
 
         <MobileMenu items={items} />

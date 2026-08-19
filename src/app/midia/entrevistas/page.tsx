@@ -42,12 +42,12 @@ export default async function EntrevistasPage() {
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <Mic size={40} className="text-teal" />
+                      <Mic size={40} className="text-teal-deep" />
                     )}
                   </div>
                   <div className="flex flex-1 flex-col pt-4">
                     {interview.outlet && (
-                      <span className="text-xs font-semibold uppercase tracking-wide text-teal">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-teal-deep">
                         {interview.outlet}
                       </span>
                     )}
@@ -55,7 +55,7 @@ export default async function EntrevistasPage() {
                       {interview.title}
                     </h2>
                     {date && <p className="mt-2 text-sm text-slate-500">{date}</p>}
-                    <span className="mt-3 text-sm font-medium text-teal">Ouvir a entrevista</span>
+                    <span className="mt-3 text-sm font-medium text-teal-deep">Ouvir a entrevista</span>
                   </div>
                 </Link>
               )

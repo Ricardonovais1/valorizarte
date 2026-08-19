@@ -32,11 +32,12 @@ export function ServiceCard({
           </p>
         )}
         <span
-          className={`mt-3 font-medium text-teal transition group-hover:text-teal-dark ${
-            size === 'lg' ? 'text-base' : 'text-sm'
-          }`}
+          className={`mt-3 inline-flex items-center gap-1 font-medium transition group-hover:text-teal-dark ${
+            dark ? 'text-teal' : 'text-teal-deep'
+          } ${size === 'lg' ? 'text-base' : 'text-sm'}`}
         >
           Saiba mais
+          <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
         </span>
       </Link>
     )
@@ -45,11 +46,14 @@ export function ServiceCard({
   return (
     <Link
       href={`/empresas/${service.slug}`}
-      className="group flex flex-col rounded-[3px] bg-navy p-6 transition hover:brightness-110"
+      className="card-lift group flex flex-col rounded-[3px] bg-navy p-6 hover:bg-navy-deep"
     >
       <h3 className="text-base font-semibold text-white">{service.title}</h3>
       {blurb && <p className="mt-2 text-sm text-white/70">{blurb}</p>}
-      <span className="mt-4 text-sm font-medium text-teal">Saiba mais →</span>
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-teal transition group-hover:text-teal-dark">
+        Saiba mais
+        <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+      </span>
     </Link>
   )
 }

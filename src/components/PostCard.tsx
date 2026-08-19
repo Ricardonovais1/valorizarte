@@ -8,7 +8,7 @@ export function PostCard({ post }: { post: Post }) {
 
   return (
     <Link href={`/${post.slug}`} className="group flex flex-col">
-      <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100">
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-sm transition-shadow duration-300 group-hover:shadow-lg">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -25,11 +25,14 @@ export function PostCard({ post }: { post: Post }) {
       </div>
       <div className="flex flex-1 flex-col pt-4">
         {post.categoryTitle && (
-          <span className="text-xs font-semibold uppercase tracking-wide text-teal">{post.categoryTitle}</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-teal-deep">{post.categoryTitle}</span>
         )}
         <h3 className="mt-2 text-lg font-semibold text-navy group-hover:text-teal-dark">{post.title}</h3>
         {post.excerpt && <p className="mt-2 line-clamp-3 text-sm text-slate-600">{post.excerpt}</p>}
-        <span className="mt-3 text-sm font-medium text-teal">Leia mais</span>
+        <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-deep transition group-hover:text-teal-dark">
+          Leia mais
+          <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </span>
       </div>
     </Link>
   )

@@ -56,7 +56,7 @@ export default async function EntrevistaPage({ params }: { params: Promise<{ slu
         <div className="mx-auto max-w-3xl space-y-8">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
             {interview.outlet && (
-              <span className="font-semibold uppercase tracking-wide text-teal">{interview.outlet}</span>
+              <span className="font-semibold uppercase tracking-wide text-teal-deep">{interview.outlet}</span>
             )}
             {date && <span>{date}</span>}
           </div>
@@ -112,7 +112,7 @@ export default async function EntrevistaPage({ params }: { params: Promise<{ slu
 
           <Link
             href="/midia/entrevistas"
-            className="inline-flex items-center gap-2 text-sm font-medium text-teal hover:text-teal-dark"
+            className="inline-flex items-center gap-2 text-sm font-medium text-teal-deep hover:text-teal-dark"
           >
             <ArrowLeft size={16} />
             Todas as entrevistas

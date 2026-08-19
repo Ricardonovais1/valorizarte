@@ -25,7 +25,7 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
             className="rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal/15 text-lg font-semibold text-teal-dark">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal/15 text-lg font-semibold text-teal-deep">
             {testimonial.name.charAt(0)}
           </div>
         )}

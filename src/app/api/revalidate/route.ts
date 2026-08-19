@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: `Tipo "${type}" não mapeado para revalidação` }, { status: 200 })
     }
 
-    revalidateTag(tag, 'max')
+    // `expire: 0` força a invalidação IMEDIATA do cache. O perfil "max"
+    // (revalidateTag(tag, 'max')) faz um stale-while-revalidate que mantém o
+    // conteúdo antigo servindo — não é o que queremos num webhook de publish.
+    revalidateTag(tag, { expire: 0 })
 
     return NextResponse.json({ revalidated: true, tag, now: Date.now() })
   } catch (error) {

@@ -54,3 +54,7 @@ worker-configuration.d.ts
 # Material de apoio interno (PDFs, notas) — não faz parte do código,
 # não precisa ir para o repositório.
 /docs-internos/
+
+# Sanity Studio — build output e cache local
+/dist/
+/.sanity/

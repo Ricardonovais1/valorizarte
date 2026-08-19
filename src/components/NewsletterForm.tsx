@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { subscribeAction, type NewsletterFormState } from '@/lib/actions/newsletter'
+import { CtaButton } from './CtaButton'
 
 const initialState: NewsletterFormState = { status: 'idle' }
 
@@ -50,13 +51,13 @@ export function NewsletterForm({
           />
         </div>
 
-        <button
+        <CtaButton
           type="submit"
           disabled={isPending}
-          className="rounded-[5px] bg-gold px-6 py-2.5 text-sm font-medium text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+          className="px-6 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending ? 'Enviando…' : 'Quero receber'}
-        </button>
+        </CtaButton>
       </form>
 
       {state.status !== 'idle' && state.message && (

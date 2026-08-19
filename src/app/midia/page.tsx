@@ -55,7 +55,7 @@ export default async function MidiaPage() {
               href={href}
               className="group flex gap-5 rounded-[3px] bg-white p-6 shadow-sm ring-1 ring-slate-200/70 transition hover:shadow-md hover:ring-teal/40"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal/15 text-teal transition group-hover:bg-teal group-hover:text-white">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal/15 text-teal-deep transition group-hover:bg-teal group-hover:text-white">
                 <Icon size={22} />
               </span>
               <span className="flex flex-col">
@@ -84,7 +84,7 @@ export default async function MidiaPage() {
                         <span className="mt-0.5 block text-sm text-slate-500">{interview.outlet}</span>
                       )}
                     </span>
-                    <span className="shrink-0 text-sm font-medium text-teal">Ouvir →</span>
+                    <span className="shrink-0 text-sm font-medium text-teal-deep">Ouvir →</span>
                   </Link>
                 </li>
               ))}
@@ -96,7 +96,7 @@ export default async function MidiaPage() {
           <section>
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="text-2xl font-bold text-navy">Galeria de fotos</h2>
-              <Link href="/midia/fotos" className="text-sm font-medium text-teal hover:text-teal-dark">
+              <Link href="/midia/fotos" className="text-sm font-medium text-teal-deep hover:text-teal-dark">
                 Ver todas →
               </Link>
             </div>
@@ -105,7 +105,7 @@ export default async function MidiaPage() {
                 const src = resolveImage(photo.image, { width: 400, height: 300 })
                 if (!src) return null
                 return (
-                  <div key={photo._id} className="aspect-[4/3] overflow-hidden rounded-[3px] bg-slate-100">
+                  <div key={photo._id} className="aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
                     <Image
                       src={src}
                       alt={photo.alt}
