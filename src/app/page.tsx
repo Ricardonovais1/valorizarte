@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
+import { Reveal } from '@/components/Reveal'
 import { SectionHeading } from '@/components/SectionHeading'
 import { ServiceCard } from '@/components/ServiceCard'
-import { BoldText } from '@/components/BoldText'
 import { PostCard } from '@/components/PostCard'
 import { ClientLogos } from '@/components/ClientLogos'
 import { FounderSection } from '@/components/FounderSection'
 import { TestimonialsSection } from '@/components/TestimonialsSection'
 import { Hero, type HeroSlide } from '@/components/Hero'
 import { IntroCards } from '@/components/IntroCards'
+import { HowWeHelp } from '@/components/HowWeHelp'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import {
   getClientLogos,
@@ -52,33 +53,21 @@ export default async function HomePage() {
 
       <FounderSection founderIntro={home?.founderIntro} founderPhoto={home?.founderPhoto} id="gilvan" />
 
-      {home?.howWeHelpTitle && (
-        <section className="py-16">
-          <Container className="max-w-3xl text-center">
-            <h2 className="text-2xl font-bold text-navy sm:text-3xl">{home.howWeHelpTitle}</h2>
-            {home.howWeHelpTagline && (
-              <p className="mt-3 text-lg font-medium text-teal-dark">{home.howWeHelpTagline}</p>
-            )}
-            {home.howWeHelpText && (
-              <p className="mt-5 leading-relaxed text-slate-600">
-                <BoldText text={home.howWeHelpText} />
-              </p>
-            )}
-          </Container>
-        </section>
-      )}
+      {home?.howWeHelpTitle && <HowWeHelp title={home.howWeHelpTitle} tagline={home.howWeHelpTagline} />}
 
       {home?.showClientLogos !== false && <ClientLogos logos={clientLogos} id="principais-clientes" />}
 
       {empresasServices.length > 0 && (
         <section className="py-16">
           <Container>
-            <h2 className="text-left text-[60px] font-bold leading-tight text-navy">Para empresas</h2>
-            <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-              {empresasServices.map((service) => (
-                <ServiceCard key={service._id} service={service} variant="plain" size="lg" />
-              ))}
-            </div>
+            <Reveal>
+              <h2 className="text-left text-4xl font-bold leading-tight text-navy sm:text-5xl lg:text-[60px]">Para empresas</h2>
+              <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+                {empresasServices.map((service) => (
+                  <ServiceCard key={service._id} service={service} variant="plain" size="lg" />
+                ))}
+              </div>
+            </Reveal>
           </Container>
         </section>
       )}
@@ -86,12 +75,14 @@ export default async function HomePage() {
       {profissionaisServices.length > 0 && (
         <section className="bg-navy py-16">
           <Container>
-            <h2 className="text-left text-[60px] font-bold leading-tight text-white">Para sua carreira</h2>
-            <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-              {profissionaisServices.map((service) => (
-                <ServiceCard key={service._id} service={service} variant="plain" dark size="lg" />
-              ))}
-            </div>
+            <Reveal>
+              <h2 className="text-left text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-[60px]">Para sua carreira</h2>
+              <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+                {profissionaisServices.map((service) => (
+                  <ServiceCard key={service._id} service={service} variant="plain" dark size="lg" />
+                ))}
+              </div>
+            </Reveal>
           </Container>
         </section>
       )}
@@ -110,7 +101,7 @@ export default async function HomePage() {
               ))}
             </div>
             <div className="mt-8 text-center">
-              <Link href="/blog" className="text-sm font-medium text-teal hover:text-teal-dark">
+              <Link href="/blog" className="text-sm font-medium text-teal-deep hover:text-teal-dark">
                 Ver todos os posts →
               </Link>
             </div>
@@ -118,9 +109,11 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="py-16" id="newsletter">
+      <section className="bg-dots py-16" id="newsletter">
         <Container className="max-w-2xl">
-          <NewsletterForm source="home" />
+          <Reveal>
+            <NewsletterForm source="home" />
+          </Reveal>
         </Container>
       </section>
     </>
