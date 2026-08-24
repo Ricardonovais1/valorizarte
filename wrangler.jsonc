@@ -51,7 +51,8 @@
 		"NEXT_PUBLIC_SANITY_DATASET": "production",
 		"NEXT_PUBLIC_SANITY_API_VERSION": "2025-01-01",
 		"NEXT_PUBLIC_SITE_URL": "https://valorizarte.com.br",
-		"BREVO_SENDER_EMAIL": "contato@valorizarte.com.br",
-		"BREVO_SENDER_NAME": "Valorizarte"
+		"BREVO_SENDER_EMAIL": "gilvan@valorizarte.com.br",
+		"BREVO_SENDER_NAME": "Valorizarte",
+		"BREVO_LIST_ID": "3"
 	}
 }

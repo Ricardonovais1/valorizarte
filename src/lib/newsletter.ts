@@ -8,6 +8,56 @@ export type NewsletterSubscription = {
 }
 
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email'
+const BREVO_CONTACTS_URL = 'https://api.brevo.com/v3/contacts'
+
+// Lista de contatos na conta Brevo do cliente onde os inscritos entram.
+// Fica com valor padrão para o cadastro funcionar sem configuração extra;
+// BREVO_LIST_ID sobrescreve, caso a lista mude ou outro ambiente use outra.
+const BREVO_LIST_ID = Number(process.env.BREVO_LIST_ID || 3)
+
+/**
+ * Adiciona o inscrito à lista de contatos do Brevo — é isso que faz a
+ * pessoa virar destinatária das campanhas, coisa que o e-mail de boas-vindas
+ * (transacional, logo abaixo) não faz sozinho.
+ *
+ * `updateEnabled: true` é o que impede um segundo cadastro do mesmo e-mail
+ * de responder 400 "Contact already exist": em vez de erro, o contato é
+ * atualizado — mesmo comportamento do `createIfNotExists` no Sanity.
+ *
+ * Como toda a integração, só age se BREVO_API_KEY existir.
+ */
+async function addContactToBrevoList(email: string, name?: string) {
+  const apiKey = process.env.BREVO_API_KEY
+  if (!apiKey) {
+    console.warn('[newsletter] BREVO_API_KEY não configurada — contato não adicionado à lista:', email)
+    return
+  }
+
+  const response = await fetch(BREVO_CONTACTS_URL, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      accept: 'application/json',
+      'api-key': apiKey,
+    },
+    body: JSON.stringify({
+      email,
+      listIds: [BREVO_LIST_ID],
+      updateEnabled: true,
+      // A conta do cliente foi criada em português e nomeia os atributos
+      // padrão como NOME/SOBRENOME — não FIRSTNAME/LASTNAME, que é o que
+      // a documentação em inglês mostra. Enviar um atributo inexistente faz
+      // a API responder 400 e o contato não entra na lista. Se um dia a
+      // conta mudar, conferir em: GET /v3/contacts/attributes
+      ...(name ? { attributes: { NOME: name } } : {}),
+    }),
+  })
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '')
+    throw new Error(`Brevo (contatos) respondeu ${response.status}: ${body}`)
+  }
+}
 
 /**
  * E-mail de boas-vindas via Brevo (https://www.brevo.com), plano gratuito
@@ -24,7 +74,10 @@ async function sendWelcomeEmail(email: string, name?: string) {
     return
   }
 
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'contato@valorizarte.com.br'
+  // Precisa ser um remetente VERIFICADO na conta Brevo, senão a API recusa
+  // o envio. Conferir em: GET /v3/senders (hoje só gilvan@ está verificado;
+  // para usar contato@, verificar antes em Brevo -> Remetentes e IPs).
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'gilvan@valorizarte.com.br'
   const senderName = process.env.BREVO_SENDER_NAME || 'Valorizarte'
   const greetingName = name ? `, ${name}` : ''
 
@@ -106,12 +159,22 @@ export async function subscribeToNewsletter({ email, name, source }: NewsletterS
     )
   }
 
+  // As duas chamadas ao Brevo são independentes e nenhuma delas pode
+  // derrubar o cadastro: o registro no Sanity é a fonte de verdade e já
+  // foi gravado acima. Por isso cada uma tem seu próprio try/catch — uma
+  // falha na lista não impede o e-mail de boas-vindas, e vice-versa. Os
+  // erros vão para o log com o corpo da resposta do Brevo, que é onde se
+  // descobre o motivo (chave inválida, lista inexistente, atributo
+  // desconhecido).
+  try {
+    await addContactToBrevoList(email, name)
+  } catch (error) {
+    console.error('[newsletter] falha ao adicionar contato na lista Brevo', error)
+  }
+
   try {
     await sendWelcomeEmail(email, name)
   } catch (error) {
-    // Falha no envio do e-mail não deve impedir o cadastro em si — ele já
-    // foi (ou não) persistido acima, o que importa para o usuário é a
-    // mensagem de sucesso no formulário.
     console.error('[newsletter] falha ao enviar e-mail de boas-vindas', error)
   }
 
