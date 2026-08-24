@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import Link from 'next/link'
 import { subscribeAction, type NewsletterFormState } from '@/lib/actions/newsletter'
 import { CtaButton } from './CtaButton'
 
@@ -22,7 +23,7 @@ export function NewsletterForm({
       <h3 className="text-lg font-semibold text-navy">{title}</h3>
       <p className="mt-1 text-sm text-slate-600">{description}</p>
 
-      <form action={formAction} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+      <form action={formAction} className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="source" value={source} />
 
         {/* Campo-armadilha (honeypot): escondido de humanos, visível para robôs simples. */}
@@ -37,27 +38,49 @@ export function NewsletterForm({
           />
         </div>
 
-        <div className="flex-1">
-          <label htmlFor={`email-${source}`} className="sr-only">
-            Seu e-mail
-          </label>
-          <input
-            id={`email-${source}`}
-            type="email"
-            name="email"
-            required
-            placeholder="seu@email.com"
-            className="w-full rounded-[5px] border border-navy/20 bg-white px-4 py-2.5 text-sm text-navy placeholder:text-slate-400 focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal"
-          />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex-1">
+            <label htmlFor={`email-${source}`} className="sr-only">
+              Seu e-mail
+            </label>
+            <input
+              id={`email-${source}`}
+              type="email"
+              name="email"
+              required
+              placeholder="seu@email.com"
+              className="w-full rounded-[5px] border border-navy/20 bg-white px-4 py-2.5 text-sm text-navy placeholder:text-slate-400 focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal"
+            />
+          </div>
+
+          <CtaButton
+            type="submit"
+            disabled={isPending}
+            className="px-6 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isPending ? 'Enviando…' : 'Quero receber'}
+          </CtaButton>
         </div>
 
-        <CtaButton
-          type="submit"
-          disabled={isPending}
-          className="px-6 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isPending ? 'Enviando…' : 'Quero receber'}
-        </CtaButton>
+        <div className="flex items-start gap-2">
+          <input
+            id={`consent-${source}`}
+            type="checkbox"
+            name="consent"
+            required
+            className="mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-navy/30 accent-teal focus:outline-none focus:ring-1 focus:ring-teal"
+          />
+          <label htmlFor={`consent-${source}`} className="text-xs leading-snug text-slate-600">
+            Li e aceito as{' '}
+            <Link
+              href="/politicas-de-privacidade"
+              className="font-medium text-teal-deep underline underline-offset-2 transition hover:text-navy"
+            >
+              Políticas de Privacidade
+            </Link>
+            .
+          </label>
+        </div>
       </form>
 
       {state.status !== 'idle' && state.message && (

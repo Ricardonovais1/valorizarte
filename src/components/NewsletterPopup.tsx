@@ -118,6 +118,31 @@ export function NewsletterPopup() {
                     />
                   </div>
 
+                  <div className="flex items-start gap-2">
+                    <input
+                      id="consent-popup"
+                      type="checkbox"
+                      name="consent"
+                      required
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded-[3px] accent-gold-bright focus:outline-none focus:ring-2 focus:ring-gold-bright"
+                    />
+                    <label htmlFor="consent-popup" className="text-xs leading-snug text-slate-600">
+                      Li e aceito as{' '}
+                      {/* Abre em nova aba de propósito: o popup cobre a página e
+                          guarda o que já foi digitado — navegar aqui dentro faria a
+                          pessoa perder o formulário preenchido. */}
+                      <Link
+                        href="/politicas-de-privacidade"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-teal-deep underline underline-offset-2"
+                      >
+                        Políticas de Privacidade
+                      </Link>
+                      .
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={isPending}
@@ -139,11 +164,7 @@ export function NewsletterPopup() {
                 )}
 
                 <p className="mt-4 text-center text-xs text-slate-500">
-                  Não fazemos spam! Leia nossa{' '}
-                  <Link href="/politicas-de-privacidade" className="text-teal-deep underline">
-                    política de privacidade
-                  </Link>{' '}
-                  para mais informações.
+                  Não fazemos spam! Você pode cancelar o recebimento a qualquer momento.
                 </p>
               </div>
             </div>

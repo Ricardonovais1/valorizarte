@@ -19,6 +19,14 @@ export const newsletterSubscriber = defineType({
     defineField({ name: 'name', title: 'Nome (opcional)', type: 'string', readOnly: true }),
     defineField({ name: 'subscribedAt', title: 'Cadastrado em', type: 'datetime', readOnly: true }),
     defineField({ name: 'source', title: 'Origem', type: 'string', readOnly: true, description: 'Página onde o formulário foi preenchido.' }),
+    defineField({
+      name: 'consentAcceptedAt',
+      title: 'Aceitou as Políticas de Privacidade em',
+      type: 'datetime',
+      readOnly: true,
+      description:
+        'Momento em que a pessoa marcou a caixa de consentimento no formulário. Vazio nos cadastros anteriores à exigência.',
+    }),
   ],
   preview: {
     select: { title: 'email', subtitle: 'subscribedAt' },

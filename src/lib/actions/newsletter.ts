@@ -14,6 +14,17 @@ const schema = z.object({
   // preenchido, tratamos como spam e fingimos sucesso.
   company: z.string().max(0, 'Campo inválido.').nullish(),
   source: z.string().max(200).nullish(),
+  // Consentimento com as Políticas de Privacidade. O navegador só envia
+  // este campo quando a caixa está marcada — um valor ausente significa
+  // "não aceitou". O `required` no input já barra o envio pelo
+  // formulário, mas uma Server Action é um endpoint público, então a
+  // exigência precisa existir aqui também.
+  consent: z
+    .string()
+    .nullish()
+    .refine((value) => value === 'on', {
+      message: 'É preciso aceitar as Políticas de Privacidade para se inscrever.',
+    }),
 })
 
 export type NewsletterFormState = {
@@ -50,6 +61,7 @@ export async function subscribeAction(
     name: formData.get('name'),
     company: formData.get('company'),
     source: formData.get('source'),
+    consent: formData.get('consent'),
   })
 
   if (!parsed.success) {

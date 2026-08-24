@@ -80,13 +80,20 @@ export async function subscribeToNewsletter({ email, name, source }: NewsletterS
     // endereço atualiza o registro em vez de criar duplicata.
     const id = `newsletterSubscriber-${Buffer.from(email.toLowerCase()).toString('base64url')}`
 
+    const now = new Date().toISOString()
+
     await write.createIfNotExists({
       _id: id,
       _type: 'newsletterSubscriber',
       email: email.toLowerCase(),
       name: name || undefined,
-      subscribedAt: new Date().toISOString(),
+      subscribedAt: now,
       source,
+      // Prova de consentimento (LGPD): a Server Action só chega aqui se a
+      // caixa "Li e aceito as Políticas de Privacidade" veio marcada, então
+      // o momento do cadastro é também o momento do aceite. Fica vazio nos
+      // cadastros feitos antes de a caixa passar a ser obrigatória.
+      consentAcceptedAt: now,
     })
     persisted = true
   } else {
