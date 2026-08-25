@@ -1,18 +1,19 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Container } from '@/components/Container'
+import { LINKEDIN_NEWSLETTER_URL, NEWSLETTER_HIGHLIGHTS } from '@/content/newsletterSuccess'
 
 export const metadata: Metadata = {
   title: 'Inscrição Confirmada com Sucesso!',
   robots: { index: false, follow: false },
 }
 
-const NEWSLETTER_HIGHLIGHTS = [
-  { emoji: '💼', text: 'Dicas valiosas para empresários, líderes e empreendedores' },
-  { emoji: '📌', text: 'Ferramentas práticas para seu desenvolvimento pessoal e profissional' },
-  { emoji: '🔥', text: 'Reflexões que despertam ação, clareza e autenticidade' },
-  { emoji: '🎯', text: 'Convites para eventos, mentorias e cursos exclusivos' },
-]
+/**
+ * Esta página era o passo do meio no fluxo antigo: o e-mail levava até
+ * aqui e só daqui a pessoa ia para o LinkedIn. Hoje a confirmação acontece
+ * num modal, no ato do cadastro, e o e-mail leva direto ao LinkedIn — mas a
+ * página continua no ar porque os e-mails já enviados apontam para ela.
+ */
 
 export default function InscricaoConfirmadaPage() {
   return (
@@ -32,7 +33,7 @@ export default function InscricaoConfirmadaPage() {
         <div className="mt-10 space-y-12">
           <div className="flex justify-center">
             <a
-              href="https://www.linkedin.com/in/gilvan-silva/recent-activity/newsletter/"
+              href={LINKEDIN_NEWSLETTER_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-[4px] bg-[#0A66C2] px-10 py-4 text-lg font-semibold text-white shadow-md transition hover:brightness-110"

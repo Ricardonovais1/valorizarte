@@ -7,42 +7,66 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import { subscribeAction, type NewsletterFormState } from '@/lib/actions/newsletter'
+import { NewsletterSuccessModal } from './NewsletterSuccessModal'
+import { marcarPopupComoResolvido, popupJaResolvido } from '@/lib/newsletterPopupSeen'
 
-const STORAGE_KEY = 'valorizarte-newsletter-popup-seen'
 const DELAY_MS = 8000
 const initialState: NewsletterFormState = { status: 'idle' }
 
 export function NewsletterPopup() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const [state, formAction, isPending] = useActionState(subscribeAction, initialState)
+  const [statusAnterior, setStatusAnterior] = useState(state.status)
 
   useEffect(() => {
     if (pathname.startsWith('/studio')) return
     if (typeof window === 'undefined') return
-    if (localStorage.getItem(STORAGE_KEY)) return
+    if (popupJaResolvido()) return
 
-    const timer = setTimeout(() => setOpen(true), DELAY_MS)
+    // A checagem se repete DENTRO do timer, não só aqui: entre montar o
+    // efeito e os 8s passarem, a pessoa pode ter se inscrito pelo
+    // formulário da página — e aí o convite não deve mais aparecer.
+    const timer = setTimeout(() => {
+      if (popupJaResolvido()) return
+      setOpen(true)
+    }, DELAY_MS)
     return () => clearTimeout(timer)
   }, [pathname])
 
   const close = () => {
     setOpen(false)
-    localStorage.setItem(STORAGE_KEY, '1')
+    marcarPopupComoResolvido()
   }
 
   // Depois de um cadastro bem-sucedido, não perguntar de novo — mesmo que
   // a pessoa não clique no X para fechar.
   useEffect(() => {
     if (state.status === 'success') {
-      localStorage.setItem(STORAGE_KEY, '1')
+      marcarPopupComoResolvido()
     }
   }, [state.status])
+
+  // Troca de diálogo na transição para "success": o popup sai de cena e o
+  // modal de confirmação entra no lugar — dois empilhados seriam confusos.
+  // Fica aqui, e não no efeito acima, porque é ajuste de estado; o efeito
+  // guarda só o que é efeito de verdade (gravar no localStorage).
+  if (state.status !== statusAnterior) {
+    setStatusAnterior(state.status)
+    if (state.status === 'success') {
+      setOpen(false)
+      setShowSuccess(true)
+    }
+  }
 
   if (pathname.startsWith('/studio')) return null
 
   return (
-    <AnimatePresence>
+    <>
+      <NewsletterSuccessModal open={showSuccess} onClose={() => setShowSuccess(false)} />
+
+      <AnimatePresence>
       {open && (
         <motion.div key="newsletter-popup">
           <motion.div
@@ -171,6 +195,7 @@ export function NewsletterPopup() {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   )
 }

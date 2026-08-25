@@ -1,5 +1,6 @@
 import { getWriteClient } from '@/sanity/lib/client'
 import { isSanityConfigured } from '@/sanity/env'
+import { LINKEDIN_NEWSLETTER_URL } from '@/content/newsletterSuccess'
 
 export type NewsletterSubscription = {
   email: string
@@ -91,6 +92,18 @@ async function sendWelcomeEmail(email: string, name?: string) {
         <p style="line-height: 1.6;">
           Obrigado por assinar a newsletter da Valorizarte. A partir de agora você vai receber
           conteúdos sobre liderança, estratégia e desenvolvimento profissional direto no seu e-mail.
+        </p>
+        <p style="line-height: 1.6;">
+          O Gilvan também publica uma newsletter no LinkedIn. Vale assinar as duas:
+        </p>
+        <p style="text-align: center; margin: 24px 0;">
+          <!-- Link direto para o LinkedIn. No site anterior este botão levava a uma
+               página intermediária de confirmação, e só de lá ao LinkedIn — um passo a
+               mais que fazia gente desistir no caminho. -->
+          <a href="${LINKEDIN_NEWSLETTER_URL}"
+             style="background: #0A66C2; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 4px; font-weight: bold; display: inline-block;">
+            Assinar a newsletter do LinkedIn
+          </a>
         </p>
         <p style="line-height: 1.6;">Um abraço,<br />Equipe Valorizarte</p>
       </div>

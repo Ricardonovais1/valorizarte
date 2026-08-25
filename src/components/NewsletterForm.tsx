@@ -1,9 +1,11 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { subscribeAction, type NewsletterFormState } from '@/lib/actions/newsletter'
 import { CtaButton } from './CtaButton'
+import { NewsletterSuccessModal } from './NewsletterSuccessModal'
+import { marcarPopupComoResolvido } from '@/lib/newsletterPopupSeen'
 
 const initialState: NewsletterFormState = { status: 'idle' }
 
@@ -17,6 +19,29 @@ export function NewsletterForm({
   description?: string
 }) {
   const [state, formAction, isPending] = useActionState(subscribeAction, initialState)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [statusAnterior, setStatusAnterior] = useState(state.status)
+
+  // A confirmação vira modal em vez de só a mensagem verde: é onde o link
+  // da newsletter do LinkedIn aparece, no momento de maior interesse.
+  //
+  // O modal não pode ser derivado direto de `state.status`, porque a pessoa
+  // precisa poder fechá-lo. Então detectamos a TRANSIÇÃO para "success"
+  // comparando com o status anterior — ajuste de estado durante a
+  // renderização, que é o padrão do React para isto. Em efeito, além de
+  // proibido pelo lint, causaria um segundo render desnecessário.
+  if (state.status !== statusAnterior) {
+    setStatusAnterior(state.status)
+    if (state.status === 'success') setShowSuccess(true)
+  }
+
+  // Silencia o popup da lista VIP: quem acabou de se inscrever aqui não pode
+  // receber, segundos depois, um convite para se inscrever. Vai em efeito, e
+  // não no ajuste de estado acima, porque gravar no localStorage é efeito
+  // colateral e a renderização precisa continuar pura.
+  useEffect(() => {
+    if (state.status === 'success') marcarPopupComoResolvido()
+  }, [state.status])
 
   return (
     <div className="rounded-[3px] bg-sage/60 p-6 sm:p-8">
@@ -95,6 +120,8 @@ export function NewsletterForm({
       <p className="mt-3 text-xs text-slate-500">
         Você pode cancelar o recebimento a qualquer momento. Não fazemos spam nem compartilhamos seu e-mail.
       </p>
+
+      <NewsletterSuccessModal open={showSuccess} onClose={() => setShowSuccess(false)} />
     </div>
   )
 }
