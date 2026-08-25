@@ -68,7 +68,17 @@ export function NewsletterPopup() {
 
       <AnimatePresence>
       {open && (
-        <motion.div key="newsletter-popup">
+        /* Ver o comentário em NewsletterSuccessModal: sem animação própria no
+           wrapper, o AnimatePresence nunca desmontava este nó e sobrava uma
+           camada `fixed inset-0` invisível bloqueando a página inteira depois
+           de fechar o popup. */
+        <motion.div
+          key="newsletter-popup"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
