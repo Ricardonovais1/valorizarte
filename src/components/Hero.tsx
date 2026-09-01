@@ -38,7 +38,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
   const imageUrl = resolveImage(slide.image, { width: 1920, height: 800 })
 
   return (
-    <section className="relative isolate flex h-[560px] items-center overflow-hidden bg-navy sm:h-[620px]">
+    <section className="relative isolate flex min-h-[var(--hero-h)] items-center overflow-hidden bg-navy pb-[var(--hero-pb)] pt-10">
       <AnimatePresence mode="sync">
         <motion.div
           key={index}
@@ -48,14 +48,19 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
           transition={{ duration: 1 }}
           className="absolute inset-0"
         >
+          {/* `object-top` + `origin-top`: o Hero é bem mais largo do que alto,
+              então sobra altura de imagem para descartar. Ancorando no topo, o
+              corte sai todo pela parte de baixo — inclusive durante o zoom, que
+              sem `origin-top` cresceria a partir do centro e voltaria a comer o
+              topo. */}
           {imageUrl && (
             <motion.div
               initial={{ scale: 1 }}
               animate={{ scale: 1.1 }}
               transition={{ duration: AUTOPLAY_MS / 1000 + 1.5, ease: 'linear' }}
-              className="absolute inset-0"
+              className="absolute inset-0 origin-top"
             >
-              <Image src={imageUrl} alt="" fill priority className="object-cover" />
+              <Image src={imageUrl} alt="" fill priority className="object-cover object-top" />
             </motion.div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/50 to-navy-deep/30" />
@@ -69,7 +74,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.15, ease: 'easeOut' }}
-              className="mx-auto max-w-3xl text-3xl font-bold uppercase tracking-tight text-white sm:text-4xl lg:text-5xl"
+              className="mx-auto max-w-3xl text-2xl font-bold uppercase tracking-tight text-white sm:text-3xl lg:text-4xl"
             >
               {slide.headline}
             </motion.h1>

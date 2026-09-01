@@ -27,7 +27,7 @@ export function IntroCards() {
   return (
     <section className="bg-wave-navy pb-16 pt-24">
       <Container>
-        <Reveal className="relative z-10 -mt-24 grid gap-6 sm:-mt-64 sm:grid-cols-3">
+        <Reveal className="relative z-10 -mt-24 grid gap-6 sm:mt-[calc(var(--hero-overlap)*-1)] sm:grid-cols-3">
           {cards.map((card) => (
             <div
               key={card.title}

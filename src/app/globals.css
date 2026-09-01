@@ -11,6 +11,25 @@
   --gold: #a48e79;
   --gold-bright: #f6c94a;
   --sage: #cfe2dd;
+
+  /* Hero e cards de introdução são uma composição só: os cards sobem por
+     cima do rodapé do Hero, então as duas medidas andam juntas.
+
+     Calibrado para o caso comum, não para monitor grande: notebook com a
+     escala do Windows em 125%/150% entrega ~610-750px de altura útil. Com
+     o Hero fixo em 620px ele sozinho ocupava a tela inteira e os cards
+     nasciam fora da área visível. Com estes valores os três cards aparecem
+     inteiros a partir de ~710px de altura, e mais da metade já aparece em
+     610px. */
+  --hero-h: clamp(440px, 62svh, 540px);
+  --hero-overlap: clamp(150px, 27svh, 246px);
+
+  /* Os cards cobrem o rodapé do Hero, então o miolo visível não é o Hero
+     inteiro. Sem compensação nenhuma, o conjunto título/subtítulo/botão fica
+     centralizado na altura total e parece baixo demais; com a compensação
+     cheia (padding-top + toda a área coberta) ele sobe demais. Este é o meio
+     termo: metade da compensação. */
+  --hero-pb: calc(40px + (var(--hero-overlap) - 96px) / 2);
 }
 
 @theme inline {
